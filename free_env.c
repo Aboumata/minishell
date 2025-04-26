@@ -26,11 +26,13 @@ void	free_env(t_envs *env)
 	}
 }
 
-void free_split(char **split)
+void	free_split(char **split)
 {
-	int i = 0;
+	int	i;
+
+	i = 0;
 	if (!split)
-		return;
+		return ;
 	while (split[i])
 		free(split[i++]);
 	free(split);
