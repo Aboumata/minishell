@@ -69,12 +69,17 @@ t_envs	*get_env(t_envs *env, char *name)
 void	update_env(t_envs *env, char *name, char *new_value)
 {
 	t_envs	*node;
+	char	*joined;
+	char	*temp;
 
 	node = get_env(env, name);
 	if (node)
 	{
+		temp = ft_strjoin(node->values, ":");
+		joined = ft_strjoin(temp, new_value);
+		free(temp);
 		free(node->values);
-		node->values = ft_strdup(new_value);
+		node->values = joined;
 	}
 }
 
