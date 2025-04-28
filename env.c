@@ -21,7 +21,8 @@ void	remove_env(t_envs **env, char *name)
 		return ;
 	current = *env;
 	previous = NULL;
-	if (ft_strncmp(current->names, name, ft_strlen(name)) == 0)
+	if (ft_strncmp(current->names, name, ft_strlen(name)) == 0
+		&& current->names[ft_strlen(name)] == '\0')
 	{
 		*env = current->next;
 		free(current->names);
@@ -31,7 +32,8 @@ void	remove_env(t_envs **env, char *name)
 	}
 	while (current)
 	{
-		if (ft_strncmp(current->names, name, ft_strlen(name)) == 0)
+		if (ft_strncmp(current->names, name, ft_strlen(name)) == 0
+			&& current->names[ft_strlen(name)] == '\0')
 		{
 			previous->next = current->next;
 			free(current->names);
@@ -79,21 +81,19 @@ void	update_env(t_envs *env, char *name, char *new_value)
 t_envs	*create_env(char *env_strs)
 {
 	t_envs	*new_env;
-	char	**split;
+	char	*equal;
 
-	split = ft_split(env_strs, '=');
-	if (!split || !split[0] || !split[1])
+	equal = ft_strchr(env_strs, '=');
+	if (!equal)
 		return (NULL);
-	new_env = malloc(sizeof(t_envs));
+	new_env = (t_envs *)malloc(sizeof(t_envs));
 	if (!new_env)
 		return (NULL);
-	new_env->names = ft_strdup(split[0]);
-	if (split[1])
-		new_env->values = ft_strdup(split[1]);
-	else
-		new_env->values = ft_strdup("");
+	new_env->names = ft_substr(env_strs, 0, equal - env_strs);
+	new_env->values = ft_strdup(equal + 1);
+	if (!new_env->names || !new_env->values)
+		return (NULL);
 	new_env->next = NULL;
-	free_split(split);
 	return (new_env);
 }
 
