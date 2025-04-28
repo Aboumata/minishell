@@ -88,7 +88,10 @@ t_envs	*create_env(char *env_strs)
 	if (!new_env)
 		return (NULL);
 	new_env->names = ft_strdup(split[0]);
-	new_env->values = ft_strdup(split[1]);
+	if (split[1])
+		new_env->values = ft_strdup(split[1]);
+	else
+		new_env->values = ft_strdup("");
 	new_env->next = NULL;
 	free_split(split);
 	return (new_env);
