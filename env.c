@@ -45,15 +45,6 @@ void	remove_env(t_envs **env, char *name)
 	}
 }
 
-void	print_env(t_envs *env)
-{
-	while (env)
-	{
-		printf("%s=%s\n", env->names, env->values);
-		env = env->next;
-	}
-}
-
 t_envs	*get_env(t_envs *env, char *name)
 {
 	while (env)
