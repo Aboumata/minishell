@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minshell.h"
+#include "minishell.h"
 
 void	remove_env(t_envs **env, char *name)
 {
@@ -21,8 +21,7 @@ void	remove_env(t_envs **env, char *name)
 		return ;
 	current = *env;
 	previous = NULL;
-	if (ft_strncmp(current->names, name, ft_strlen(name)) == 0
-		&& current->names[ft_strlen(name)] == '\0')
+	if (safe_strcmp(current->names, name))
 	{
 		*env = current->next;
 		free(current->names);
@@ -32,10 +31,10 @@ void	remove_env(t_envs **env, char *name)
 	}
 	while (current)
 	{
-		if (ft_strncmp(current->names, name, ft_strlen(name)) == 0
-			&& current->names[ft_strlen(name)] == '\0')
+		if (safe_strcmp(current->names, name))
 		{
-			previous->next = current->next;
+			if (previous != NULL)
+				previous->next = current->next;
 			free(current->names);
 			free(current->values);
 			free(current);

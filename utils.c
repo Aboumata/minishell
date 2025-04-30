@@ -1,27 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   free_env.c                                         :+:      :+:    :+:   */
+/*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aboumata <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/26 16:04:59 by aboumata          #+#    #+#             */
-/*   Updated: 2025/04/26 16:05:01 by aboumata         ###   ########.fr       */
+/*   Created: 2025/04/30 09:11:13 by aboumata          #+#    #+#             */
+/*   Updated: 2025/04/30 09:11:16 by aboumata         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	free_env(t_envs *env)
+bool	safe_strcmp(const char *s1, const char *s2)
 {
-	t_envs	*tmp;
+	size_t	len_s1;
+	size_t	len_s2;
 
-	while (env)
-	{
-		tmp = env->next;
-		free(env->names);
-		free(env->values);
-		free(env);
-		env = tmp;
-	}
+	len_s1 = ft_strlen(s1);
+	len_s2 = ft_strlen(s2);
+	if (len_s1 != len_s2)
+		return (false);
+	return (ft_strncmp(s1, s2, ft_strlen(s1)) == 0);
 }
