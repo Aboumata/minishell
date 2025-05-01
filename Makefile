@@ -1,17 +1,18 @@
 CC = cc
 CFLAGS = -Wall -Wextra -Werror
 
-SRC = env.c free_env.c main.c utils.c
+SRC = env.c free_env.c minishell.c utils.c
 OBJCS = ${SRC:.c=.o}
 
 NAME = minishell
 LIBFT_DIR = libft
 LIBFT = ${LIBFT_DIR}/libft.a
+LDFLAGS = -lreadline
 
 all: ${NAME}
 
 ${NAME}: ${OBJCS} ${LIBFT}
-	${CC} ${CFLAGS} ${OBJCS} ${LIBFT} -o ${NAME}
+	${CC} ${CFLAGS} ${OBJCS} ${LIBFT} ${LDFLAGS} -o ${NAME}
 
 ${LIBFT}:
 	make -C ${LIBFT_DIR}

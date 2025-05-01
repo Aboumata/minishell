@@ -14,6 +14,8 @@
 # define MINISHELL_H
 
 # include "libft/libft.h"
+# include <readline/readline.h>
+# include <readline/history.h>
 # include <stdbool.h>
 # include <stdio.h>
 # include <stdlib.h>
@@ -24,6 +26,8 @@ typedef struct s_envs
 	char			*values;
 	struct s_envs	*next;
 }					t_envs;
+
+extern t_envs		*g_env;
 
 void				free_env(t_envs *env);
 bool				safe_strcmp(const char *s1, const char *s2);
