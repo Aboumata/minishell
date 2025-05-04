@@ -19,6 +19,7 @@
 # include <stdbool.h>
 # include <stdio.h>
 # include <stdlib.h>
+# include <signal.h>
 
 typedef struct s_envs
 {

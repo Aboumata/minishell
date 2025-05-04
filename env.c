@@ -49,7 +49,7 @@ t_envs	*get_env(t_envs *env, char *name)
 {
 	while (env)
 	{
-		if (ft_strncmp(env->names, name, ft_strlen(name)) == 0)
+		if (safe_strcmp(env->names, name))
 			return (env);
 		env = env->next;
 	}
@@ -87,7 +87,12 @@ t_envs	*create_env(char *env_strs)
 	new_env->names = ft_substr(env_strs, 0, equal - env_strs);
 	new_env->values = ft_strdup(equal + 1);
 	if (!new_env->names || !new_env->values)
+	{
+		free(new_env->names);
+		free(new_env->values);
+		free(new_env);
 		return (NULL);
+	}
 	new_env->next = NULL;
 	return (new_env);
 }

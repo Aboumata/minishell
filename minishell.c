@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.c                                             :+:      :+:    :+:   */
+/*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aboumata <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/26 16:20:00 by aboumata          #+#    #+#             */
-/*   Updated: 2025/04/26 16:20:02 by aboumata         ###   ########.fr       */
+/*   Created: 2025/05/03 15:08:49 by aboumata          #+#    #+#             */
+/*   Updated: 2025/05/03 15:08:50 by aboumata         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,24 +16,25 @@ t_envs	*g_env = NULL;
 
 int	main(int argc, char **argv, char *envp[])
 {
-	g_env = init_env(envp);
-	char *input;
+	char	*input;
 
+	g_env = init_env(envp);
 	(void)argc;
 	(void)argv;
-
 	while (1)
 	{
 		input = readline("minishell> ");
 		if (!input)
-			break;
+			break ;
 		if (*input)
 		{
 			add_history(input);
-			//parsing need
+			if (safe_strcmp(input, "env"))
+				print_env(g_env);
 		}
-			free(input);
+		free(input);
 	}
+	clear_history();
 	free_env(g_env);
 	return (0);
 }
