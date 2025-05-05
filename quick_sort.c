@@ -1,0 +1,56 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   quick_sort.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aboumata <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/05 18:43:03 by aboumata          #+#    #+#             */
+/*   Updated: 2025/05/05 18:43:07 by aboumata         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+void	swap(t_envs **a, t_envs **b)
+{
+	t_envs	*tmp;
+
+	tmp = *a;
+	*a = *b;
+	*b = tmp;
+}
+
+int	partition(t_envs **arr, int low, int high)
+{
+	t_envs	*pivot;
+	int		i;
+	int		j;
+
+	pivot = arr[high];
+	i = low - 1;
+	j = low;
+	while (j < high)
+	{
+		if (safe_strcmp(arr[j]->names, pivot->names) < 0)
+		{
+			i++;
+			swap(&arr[i], &arr[j]);
+		}
+		j++;
+	}
+	swap(&arr[i + 1], &arr[high]);
+	return (i + 1);
+}
+
+void	quick_sort(t_envs **arr, int low, int high)
+{
+		int pi;
+
+	if (low < high)
+	{
+		pi = partition(arr, low, high);
+		quick_sort(arr, low, pi - 1);
+		quick_sort(arr, pi + 1, high);
+	}
+}

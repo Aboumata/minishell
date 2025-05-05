@@ -38,4 +38,6 @@ t_envs				*get_env(t_envs *env, char *name);
 void				update_env(t_envs *env, char *name, char *new_value);
 t_envs				*create_env(char *env_strs);
 t_envs				*init_env(char *envp[]);
+void				quick_sort (t_envs **arr, int low, int high);
+void				sorted_env(t_envs *env);
 #endif
