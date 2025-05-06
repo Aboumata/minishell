@@ -54,7 +54,7 @@ t_envs	*sort_env(t_envs *env)
 
 	int len, (i);
 	len = ft_lstsize_env(env);
-	array = malloc(sizeof(t_envs *) * (len));
+	array = malloc(sizeof(t_envs *) * len);
 	if (!array)
 		return (NULL);
 	cur_envs = env;
