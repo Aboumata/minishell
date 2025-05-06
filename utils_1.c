@@ -32,6 +32,8 @@ bool	safe_strcmp(const char *s1, const char *s2)
 	size_t	len_s1;
 	size_t	len_s2;
 
+	if (!s1 || !s2)
+		return (0);
 	len_s1 = ft_strlen(s1);
 	len_s2 = ft_strlen(s2);
 	if (len_s1 != len_s2)
