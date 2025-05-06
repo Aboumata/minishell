@@ -45,7 +45,7 @@ int	partition(t_envs **arr, int low, int high)
 
 void	quick_sort(t_envs **arr, int low, int high)
 {
-		int pi;
+	int	pi;
 
 	if (low < high)
 	{
