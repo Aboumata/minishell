@@ -16,6 +16,8 @@ int	ft_lstsize_env(t_envs *env)
 {
 	int	i;
 
+	if (!env)
+		return (0);
 	i = 0;
 	while (env)
 	{
