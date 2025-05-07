@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                         :+:      :+:    :+:   */
+/*   minishell.h                                         :+:      :+:   :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aboumata <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -14,12 +14,12 @@
 # define MINISHELL_H
 
 # include "libft/libft.h"
-# include <readline/readline.h>
 # include <readline/history.h>
+# include <readline/readline.h>
+# include <signal.h>
 # include <stdbool.h>
 # include <stdio.h>
 # include <stdlib.h>
-# include <signal.h>
 
 typedef struct s_envs
 {
@@ -38,6 +38,6 @@ t_envs				*get_env(t_envs *env, char *name);
 void				update_env(t_envs *env, char *name, char *new_value);
 t_envs				*create_env(char *env_strs);
 t_envs				*init_env(char *envp[]);
-void				quick_sort (t_envs **arr, int low, int high);
+void				quick_sort(t_envs **arr, int low, int high);
 void				sorted_env(t_envs *env);
 #endif
