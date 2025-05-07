@@ -14,34 +14,28 @@
 
 void	remove_env(t_envs **env, char *name)
 {
-	t_envs	*current;
-	t_envs	*previous;
+	t_envs	*cur;
+	t_envs	*prev;
 
 	if (!env || !*env || !name)
 		return ;
-	current = *env;
-	previous = NULL;
-	if (safe_strcmp(current->names, name))
+	cur = *env;
+	prev = NULL;
+	while (cur)
 	{
-		*env = current->next;
-		free(current->names);
-		free(current->values);
-		free(current);
-		return ;
-	}
-	while (current)
-	{
-		if (safe_strcmp(current->names, name))
+		if (safe_strcmp(cur->names, name))
 		{
-			if (previous != NULL)
-				previous->next = current->next;
-			free(current->names);
-			free(current->values);
-			free(current);
+			if (prev)
+				prev->next = cur->next;
+			else
+				*env = cur->next;
+			free(cur->names);
+			free(cur->values);
+			free(cur);
 			return ;
 		}
-		previous = current;
-		current = current->next;
+		prev = cur;
+		cur = cur->next;
 	}
 }
 
