@@ -21,7 +21,7 @@ void	swap(t_envs **a, t_envs **b)
 	*b = tmp;
 }
 
-int	partition(t_envs **arr, int low, int high)
+int	partition(t_envs **arr, const int low, const int high)
 {
 	t_envs	*pivot;
 	int		i;
@@ -43,7 +43,7 @@ int	partition(t_envs **arr, int low, int high)
 	return (i + 1);
 }
 
-void	quick_sort(t_envs **arr, int low, int high)
+void	quick_sort(t_envs **arr, const int low, const int high)
 {
 	int	pi;
 

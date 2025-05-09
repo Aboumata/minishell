@@ -14,7 +14,7 @@
 
 t_envs	*g_env = NULL;
 
-int	main(int argc, char **argv, char *envp[])
+int	main(const int argc, char **argv, char *envp[])
 {
 	char	*input;
 

@@ -39,7 +39,7 @@ void	remove_env(t_envs **env, char *name)
 	}
 }
 
-t_envs	*get_env(t_envs *env, char *name)
+t_envs	*get_env(t_envs *env, const char *name)
 {
 	while (env)
 	{
@@ -50,7 +50,7 @@ t_envs	*get_env(t_envs *env, char *name)
 	return (NULL);
 }
 
-void	update_env(t_envs *env, char *name, char *new_value)
+void	update_env(t_envs *env, char *name, const char *new_value)
 {
 	t_envs	*node;
 	char	*joined;
@@ -67,7 +67,7 @@ void	update_env(t_envs *env, char *name, char *new_value)
 	}
 }
 
-t_envs	*create_env(char *env_strs)
+t_envs	*create_env(const char *env_strs)
 {
 	t_envs	*new_env;
 	char	*equal;

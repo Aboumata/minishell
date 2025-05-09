@@ -41,7 +41,7 @@ bool	safe_strcmp(const char *s1, const char *s2)
 	return (ft_strncmp(s1, s2, ft_strlen(s1)) == 0);
 }
 
-void	print_env(t_envs *env)
+void	print_env(const t_envs *env)
 {
 	while (env)
 	{

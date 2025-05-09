@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-bool	is_valid(char *str)
+bool	is_valid(const char *str)
 {
 	int	i;
 
