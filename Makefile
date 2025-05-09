@@ -1,8 +1,8 @@
 CC = cc
 CFLAGS = -Wall -Wextra -Werror
 
-SRC = env.c free_env.c minishell.c utils_1.c export.c quick_sort.c \
-	  utils_2.c
+SRC = env.c free_env.c minishell.c utils_env.c export.c quick_sort.c \
+	  utils_export.c
 OBJCS = ${SRC:.c=.o}
 
 NAME = minishell
