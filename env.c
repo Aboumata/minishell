@@ -50,7 +50,7 @@ t_envs	*get_env(t_envs *env, const char *name)
 	return (NULL);
 }
 
-void	update_env(t_envs *env, char *name, const char *new_value)
+void	update_env(t_envs *env, const char *name, const char *new_value)
 {
 	t_envs	*node;
 	char	*joined;

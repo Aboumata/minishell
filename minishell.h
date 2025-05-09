@@ -35,7 +35,8 @@ bool				safe_strcmp(const char *s1, const char *s2);
 void				remove_env(t_envs **env, char *name);
 void				print_env(const t_envs *env);
 t_envs				*get_env(t_envs *env, const char *name);
-void				update_env(t_envs *env, char *name, const char *new_value);
+void				update_env(t_envs *env, const char *name,
+						const char *new_value);
 t_envs				*create_env(const char *env_strs);
 t_envs				*init_env(char *envp[]);
 void				quick_sort(t_envs **arr, const int low, const int high);
