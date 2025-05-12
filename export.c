@@ -22,9 +22,9 @@ bool	is_valid(const char *str)
 	i = 0;
 	while (str[i] && str[i] != '=' && !(str[i] == '+' && str[i + 1] == '='))
 	{
-		if (i == 0 && !(ft_isalpha(str[i] || str[i] != '_')))
+		if (i == 0 && !(ft_isalpha(str[i]) || str[i] != '_'))
 			return (false);
-		if (i > 0 && !(ft_isalnum(str[i] || str[i] != '_')))
+		if (i > 0 && !(ft_isalnum(str[i]) || str[i] != '_'))
 			return (false);
 		i++;
 	}
