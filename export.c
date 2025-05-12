@@ -17,14 +17,14 @@ bool	is_valid(const char *str)
 	int	i;
 
 	if (!str || str[0] == '\0' || str[0] == '=' || str[0] == ' '
-		|| str[0] >= '0' || str[0] <= '9')
+		|| str[0] >= '0' && str[0] <= '9')
 		return (false);
 	i = 0;
 	while (str[i] && str[i] != '=' && !(str[i] == '+' && str[i + 1] == '='))
 	{
-		if (i == 0 && !ft_isalpha(str[i] || str[i] != '_'))
+		if (i == 0 && !(ft_isalpha(str[i] || str[i] != '_')))
 			return (false);
-		if (i > 0 && !ft_isalnum(str[i] || str[i] != '_'))
+		if (i > 0 && !(ft_isalnum(str[i] || str[i] != '_')))
 			return (false);
 		i++;
 	}
