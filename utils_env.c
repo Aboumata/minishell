@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils_env.c                                          :+:      :+:  :+:   */
+/*   utils_env.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aboumata <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -27,52 +27,47 @@ int	ft_lstsize_env(t_envs *env)
 	return (i);
 }
 
-bool	safe_strcmp(const char *s1, const char *s2)
+static void	fill_env_array(t_envs **array, t_envs *env, int len)
 {
-	size_t	len_s1;
-	size_t	len_s2;
+	int		i;
+	t_envs	*cur_envs;
 
-	if (!s1 || !s2)
-		return (0);
-	len_s1 = ft_strlen(s1);
-	len_s2 = ft_strlen(s2);
-	if (len_s1 != len_s2)
-		return (false);
-	return (ft_strncmp(s1, s2, ft_strlen(s1)) == 0);
+	i = 0;
+	cur_envs = env;
+	while (i < len)
+	{
+		array[i] = cur_envs;
+		cur_envs = cur_envs->next;
+		i++;
+	}
 }
 
-void	print_env(const t_envs *env)
+static void	relink_env_array(t_envs **array, int len)
 {
-	while (env)
+	int	i;
+
+	i = 0;
+	while (i < len - 1)
 	{
-		printf("%s=%s\n", env->names, env->values);
-		env = env->next;
+		array[i]->next = array[i + 1];
+		i++;
 	}
+	array[len - 1]->next = NULL;
 }
 
 t_envs	*sort_env(t_envs *env)
 {
+	int		len;
 	t_envs	**array;
-	t_envs	*cur_envs;
 	t_envs	*sorted_head;
 
-	int len, (i);
 	len = ft_lstsize_env(env);
 	array = malloc(sizeof(t_envs *) * len);
 	if (!array)
 		return (NULL);
-	cur_envs = env;
-	i = 0;
-	while (i < len)
-	{
-		array[i++]->next = cur_envs;
-		cur_envs = cur_envs->next;
-	}
+	fill_env_array(array, env, len);
 	quick_sort(array, 0, len - 1);
-	i = 0;
-	while (i < len)
-		array[i++] = array[i + 1];
-	array[len - 1]->next = NULL;
+	relink_env_array(array, len);
 	sorted_head = array[0];
 	free(array);
 	return (sorted_head);

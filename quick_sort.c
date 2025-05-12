@@ -12,6 +12,23 @@
 
 #include "minishell.h"
 
+int	envs_name_cmp(const char *a, const char *b)
+{
+	size_t	len_a;
+	size_t	len_b;
+	size_t	cmp_len;
+	int		result;
+
+	len_a = ft_strlen(a);
+	len_b = ft_strlen(b);
+	if (len_a < len_b)
+		cmp_len = len_a;
+	else
+		cmp_len = len_b;
+	result = ft_strncmp(a, b, cmp_len);
+	return (result);
+}
+
 void	swap(t_envs **a, t_envs **b)
 {
 	t_envs	*tmp;
@@ -32,7 +49,7 @@ int	partition(t_envs **arr, const int low, const int high)
 	j = low;
 	while (j < high)
 	{
-		if (safe_strcmp(arr[j]->names, pivot->names) < 0)
+		if (envs_name_cmp(arr[j]->names, pivot->names) < 0)
 		{
 			i++;
 			swap(&arr[i], &arr[j]);
