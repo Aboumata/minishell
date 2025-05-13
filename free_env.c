@@ -25,3 +25,18 @@ void	free_env(t_envs *env)
 		env = tmp;
 	}
 }
+
+void	free_split(char **result)
+{
+	int	i;
+
+	if (!result)
+		return ;
+	i = 0;
+	while (result[i])
+	{
+		free(result[i]);
+		i++;
+	}
+	free(result);
+}
