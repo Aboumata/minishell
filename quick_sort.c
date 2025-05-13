@@ -21,12 +21,23 @@ int	envs_name_cmp(const char *a, const char *b)
 
 	len_a = ft_strlen(a);
 	len_b = ft_strlen(b);
-	if (len_a < len_b)
+
+	if (len_a > len_b)
 		cmp_len = len_a;
 	else
 		cmp_len = len_b;
+
 	result = ft_strncmp(a, b, cmp_len);
-	return (result);
+	if (result == 0)
+	{
+		if (len_a < len_b)
+			return -1;
+		else if (len_a > len_b)
+			return 1;
+		else
+			return 0;
+	}
+	return result;
 }
 
 void	swap(t_envs **a, t_envs **b)
