@@ -28,10 +28,8 @@ bool	is_valid(const char *str)
 				return (false);
 		}
 		else
-		{
 			if (!(ft_isalnum(str[i]) || str[i] == '_'))
 				return (false);
-		}
 		if (str[i] == ' ')
 			return (false);
 		i++;
@@ -43,49 +41,72 @@ bool	is_valid(const char *str)
 	return (true);
 }
 
+static void	set_append_env_var(t_envs **env, const char *arg, char *plus_equal)
+{
+	t_envs	*node;
+	char	*name;
+	char	*value;
+	char	*old;
+	char	*new_val;
+
+	name = ft_substr(arg, 0, plus_equal - arg);
+	value = plus_equal + 2;
+	node = get_env(*env, name);
+	if (node)
+	{
+		if (node->values)
+			old = node->values;
+		else
+			old = "";
+		new_val = ft_strjoin(old, value);
+		free(node->values);
+		node->values = new_val;
+	}
+	else
+		*env = add_env(*env, name, value);
+	free(name);
+}
+
+static void	set_equal_env_var(t_envs **env, const char *arg, char *equal)
+{
+	t_envs	*node;
+	char	*name;
+	char	*value;
+
+	name = ft_substr(arg, 0, equal - arg);
+	value = equal + 1;
+	node = get_env(*env, name);
+	if (node)
+	{
+		free(node->values);
+		node->values = ft_strdup(value);
+	}
+	else
+		*env = add_env(*env, name, value);
+	free(name);
+}
+
 void	set_env_var(t_envs **env, const char *arg)
 {
-	char *name;
-	char *equal;
-	char *value;
-	char *plus_equal;
-	t_envs *node;
+	t_envs	*node;
+	char	*equal;
+	char	*plus_equal;
 
 	plus_equal = ft_strnstr(arg, "+=", 0);
 	if (plus_equal)
 	{
-		name = ft_substr(arg, 0, plus_equal - arg);
-		value = plus_equal + 2;
-		node = get_env(*env, name);
-		if (node)
-		{
-			free(node->values);
-			node->values = ft_strdup(value);
-		}
-		else
-			*env = add_env(*env, name, value);
-		free(name);
-		return;
+		set_append_env_var(env, arg, plus_equal);
+		return ;
 	}
 	equal = ft_strchr(arg, '=');
 	if (equal)
 	{
-		name = ft_substr(arg, 0, equal - arg);
-		value = equal + 1;
-		node = get_env(*env, name);
-		if (node)
-		{
-			free(node->values);
-			node->values = ft_strdup(value);
-		}
-		else
-			*env = add_env(*env, name, value);
-		free(name);
-		return;
+		set_equal_env_var(env, arg, equal);
+		return ;
 	}
-
-	if (!get_env(*env, arg))
-		*env = add_env(*env, arg, "");
+	node = get_env(*env, arg);
+	if (!node)
+		*env = add_env(*env, arg, NULL);
 }
 
 void	into_export(t_envs **env, char *arg[])
@@ -100,10 +121,12 @@ void	into_export(t_envs **env, char *arg[])
 	i = 1;
 	while (arg[i])
 	{
-		if (!is_valid(arg[i]))
+		char *trimmed_arg = ft_strtrim(arg[i], " \t\n\r");
+		if (!is_valid(trimmed_arg))
 			printf("export: `%s': not a valid identifier\n", arg[i]);
 		else
-			set_env_var(env, arg[i]);
+			set_env_var(env, trimmed_arg);
+		free(trimmed_arg);
 		i++;
 	}
 }
