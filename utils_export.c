@@ -10,7 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include "minishell.h"
 
 bool	safe_strcmp(const char *s1, const char *s2)
@@ -36,28 +35,31 @@ void	print_env(const t_envs *env)
 	}
 }
 
-t_envs	*add_env(t_envs *env, const char *names, const char *values)
+t_envs *add_env(t_envs *env, const char *names, const char *values)
 {
-	t_envs	*new_node;
-	t_envs	*current;
+	t_envs *new_node;
+	t_envs *current;
 
 	new_node = (t_envs *)malloc(sizeof(t_envs));
 	if (!new_node)
 		return (env);
 	new_node->names = ft_strdup(names);
 	if (!new_node->names)
+		return (free(new_node), env);
+	if (values)
 	{
-		free(new_node);
-		return (env);
+		new_node->values = ft_strdup(values);
+		if (!new_node->values)
+		{
+			free(new_node->names);
+			free(new_node);
+			return (env);
+		}
 	}
-	new_node->values = ft_strdup(values);
-	if (!new_node->values)
-	{
-		free(new_node->names);
-		free(new_node);
-		return (env);
-	}
+	else
+		new_node->values = NULL;
 	new_node->next = NULL;
+
 	if (!env)
 		return (new_node);
 	current = env;
