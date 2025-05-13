@@ -76,7 +76,16 @@ t_envs	*sort_env(t_envs *env)
 void	sorted_env(t_envs *env)
 {
 	t_envs	*sorted;
+	t_envs	*tmp;
 
 	sorted = sort_env(env);
-	print_env(sorted);
+	tmp = sorted;
+	while (tmp)
+	{
+		if (tmp->values == NULL)
+			printf("declare -x %s\n", tmp->names);
+		else
+			printf("declare -x %s=\"%s\"\n", tmp->names, tmp->values);
+		tmp = tmp->next;
+	}
 }
