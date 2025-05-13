@@ -41,4 +41,5 @@ t_envs				*create_env(const char *env_strs);
 t_envs				*init_env(char *envp[]);
 void				quick_sort(t_envs **arr, const int low, const int high);
 void				sorted_env(t_envs *env);
+t_envs				*add_env(t_envs *env, const char *names, const char *values);
 #endif

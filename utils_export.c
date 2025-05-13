@@ -5,10 +5,11 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: aboumata <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/07 17:16:46 by aboumata          #+#    #+#             */
-/*   Updated: 2025/05/07 17:16:47 by aboumata         ###   ########.fr       */
+/*   Created: 2025/05/13 14:49:34 by aboumata          #+#    #+#             */
+/*   Updated: 2025/05/13 14:49:36 by aboumata         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #include "minishell.h"
 
@@ -33,4 +34,35 @@ void	print_env(const t_envs *env)
 		printf("%s=%s\n", env->names, env->values);
 		env = env->next;
 	}
+}
+
+t_envs	*add_env(t_envs *env, const char *names, const char *values)
+{
+	t_envs	*new_node;
+	t_envs	*current;
+
+	new_node = (t_envs *)malloc(sizeof(t_envs));
+	if (!new_node)
+		return (env);
+	new_node->names = ft_strdup(names);
+	if (!new_node->names)
+	{
+		free(new_node);
+		return (env);
+	}
+	new_node->values = ft_strdup(values);
+	if (!new_node->values)
+	{
+		free(new_node->names);
+		free(new_node);
+		return (env);
+	}
+	new_node->next = NULL;
+	if (!env)
+		return (new_node);
+	current = env;
+	while (current->next)
+		current = current->next;
+	current->next = new_node;
+	return (env);
 }

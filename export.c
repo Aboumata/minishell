@@ -43,13 +43,58 @@ bool	is_valid(const char *str)
 	return (true);
 }
 
-void	into_export(t_envs *env, char *arg[])
+void	set_env_var(t_envs **env, const char *arg)
+{
+	char *name;
+	char *equal;
+	char *value;
+	char *plus_equal;
+	t_envs *node;
+
+	plus_equal = ft_strnstr(arg, "+=", 0);
+	if (plus_equal)
+	{
+		name = ft_substr(arg, 0, plus_equal - arg);
+		value = plus_equal + 2;
+		node = get_env(*env, name);
+		if (node)
+		{
+			free(node->values);
+			node->values = ft_strdup(value);
+		}
+		else
+			*env = add_env(*env, name, value);
+		free(name);
+		return;
+	}
+	equal = ft_strchr(arg, '=');
+	if (equal)
+	{
+		name = ft_substr(arg, 0, equal - arg);
+		value = equal + 1;
+		node = get_env(*env, name);
+		if (node)
+		{
+			free(node->values);
+			node->values = ft_strdup(value);
+		}
+		else
+			*env = add_env(*env, name, value);
+		free(name);
+		return;
+	}
+
+	if (!get_env(*env, arg))
+		*env = add_env(*env, arg, "");
+}
+
+void	into_export(t_envs **env, char *arg[])
 {
 	int	i;
 
 	if (!arg[1])
 	{
-		sorted_env(env);
+		sorted_env(*env);
 		return ;
 	}
 	i = 1;
@@ -58,6 +103,7 @@ void	into_export(t_envs *env, char *arg[])
 		if (!is_valid(arg[i]))
 			printf("export: `%s': not a valid identifier\n", arg[i]);
 		else
-			i++;
+			set_env_var(env, arg[i]);
+		i++;
 	}
 }
