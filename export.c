@@ -92,7 +92,7 @@ void	set_env_var(t_envs **env, const char *arg)
 	char	*equal;
 	char	*plus_equal;
 
-	plus_equal = ft_strnstr(arg, "+=", 0);
+	plus_equal = ft_strnstr(arg, "+=", ft_strlen(arg));
 	if (plus_equal)
 	{
 		set_append_env_var(env, arg, plus_equal);
