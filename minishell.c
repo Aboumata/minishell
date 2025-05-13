@@ -2,6 +2,7 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
+/*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aboumata <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -12,7 +13,22 @@
 
 #include "minishell.h"
 
-t_envs	*g_env = NULL;
+t_envs		*g_env = NULL;
+
+static void	handle_input(char *input)
+{
+	char	**args;
+
+	if (safe_strcmp(input, "env"))
+		print_env(g_env);
+	else if (ft_strncmp(input, "export", 6) == 0 && (input[6] == '\0'
+			|| input[6] == ' '))
+	{
+		args = ft_split(input, ' ');
+		into_export(&g_env, args);
+		free_split(args);
+	}
+}
 
 int	main(const int argc, char **argv, char *envp[])
 {
@@ -29,8 +45,7 @@ int	main(const int argc, char **argv, char *envp[])
 		if (*input)
 		{
 			add_history(input);
-			if (safe_strcmp(input, "env"))
-				print_env(g_env);
+			handle_input(input);
 		}
 		free(input);
 	}
