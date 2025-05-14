@@ -21,19 +21,21 @@ static void	handle_input(char *input)
 
 	if (safe_strcmp(input, "env"))
 		print_env(g_env);
-	else if (ft_strncmp(input, "export", 6) == 0 && (input[6] == '\0'
-			|| input[6] == ' '))
+	else if (ft_strncmp(input, "export", 6) == 0 && (input[6] == '\0' || input[6] == ' '))
 	{
 		args = mini_shell_split(input);
 		into_export(&g_env, args);
 		free_split(args);
 	}
-	else if (strncmp(input, "cd", 2) == 0 && input[2] == ' ')
+	else if (ft_strncmp(input, "cd", 2) == 0 && (input[2] == '\0' || input[2] == ' '))
 	{
 		args = split_by_spaces(input);
 		builtin_cd(args[1]);
 		free_split(args);
 	}
+	else if (ft_strncmp(input, "pwd", 3) == 0 && (input[3] == '\0' || input[3] == ' '))
+		builtin_pwd();
+
 }
 
 int	main(const int argc, char **argv, char *envp[])

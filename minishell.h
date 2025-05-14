@@ -48,6 +48,6 @@ void				free_split(char **result);
 char				**mini_shell_split(const char *str);
 void				builtin_cd (char *path);
 char				**split_by_spaces (char *line);
-
+void				builtin_pwd(void);
 
 #endif
