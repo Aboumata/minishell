@@ -15,6 +15,20 @@
 
 t_envs		*g_env = NULL;
 
+void handle_sigint(int sig)
+{
+	(void)sig;
+	write(1, "\n", 1);
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
+}
+
+void handle_sigquit(int sig)
+{
+	(void)sig;
+}
+
 static void	handle_input(char *input)
 {
 	char	**args;
@@ -45,9 +59,27 @@ int	main(const int argc, char **argv, char *envp[])
 	g_env = init_env(envp);
 	(void)argc;
 	(void)argv;
+	signal(SIGINT, handle_sigint);
+	signal(SIGQUIT, handle_sigquit);
 	while (1)
 	{
-		input = readline("minishell$ ");
+		char cwd[4096];
+		char prompt[4120];
+		char *home = getenv("HOME");
+
+		prompt[0] = '\0';
+		if (getcwd(cwd, sizeof(cwd)) != NULL)
+		{
+			if (home && !ft_strncmp(cwd, home, ft_strlen(home)))
+			{
+				ft_strlcat(prompt, "~", sizeof(prompt));
+				ft_strlcat(prompt, cwd + ft_strlen(home), sizeof(prompt));
+			}
+			else
+				ft_strlcat(prompt, cwd, sizeof(prompt));
+		}
+		ft_strlcat(prompt, "$ ", sizeof(prompt));
+		input = readline(prompt);
 		if (!input)
 			break ;
 		if (*input)
