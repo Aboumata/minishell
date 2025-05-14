@@ -31,13 +31,13 @@ int	envs_name_cmp(const char *a, const char *b)
 	if (result == 0)
 	{
 		if (len_a < len_b)
-			return -1;
+			return (-1);
 		else if (len_a > len_b)
-			return 1;
+			return (1);
 		else
-			return 0;
+			return (0);
 	}
-	return result;
+	return (result);
 }
 
 void	swap(t_envs **a, t_envs **b)
