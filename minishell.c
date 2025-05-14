@@ -24,7 +24,7 @@ static void	handle_input(char *input)
 	else if (ft_strncmp(input, "export", 6) == 0 && (input[6] == '\0'
 			|| input[6] == ' '))
 	{
-		args = ft_split(input, ' ');
+		args = mini_shell_split(input);
 		into_export(&g_env, args);
 		free_split(args);
 	}

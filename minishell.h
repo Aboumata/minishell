@@ -45,5 +45,7 @@ t_envs				*add_env(t_envs *env, const char *names,
 						const char *values);
 void				into_export(t_envs **env, char *arg[]);
 void				free_split(char **result);
+char				**mini_shell_split(const char *str);
+void				builtin_cd (char *path);
 
 #endif
