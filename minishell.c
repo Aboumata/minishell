@@ -47,7 +47,7 @@ int	main(const int argc, char **argv, char *envp[])
 	(void)argv;
 	while (1)
 	{
-		input = readline("minishell> ");
+		input = readline("minishell$ ");
 		if (!input)
 			break ;
 		if (*input)
