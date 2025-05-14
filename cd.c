@@ -14,16 +14,23 @@
 
 char **split_by_spaces (char *line)
 {
-    return (NULL);
+    char **args;
+
+    args = ft_split(line, ' ');
+    if (!args)
+        return (free_split(args), NULL);
+
+    return (args);
 }
 
 void builtin_cd (char *path)
 {
-    /*
-    * args: array of string arguments, already P A R S E D.
-    * e.g., for "cd ../dir" => args[0] = "cd", args[1] = "../dir", args[2] = NULL
-    * Parsing must be done before calling this function.
-    */
 
-
+    if (!path)
+    {
+        printf("cd: missing operand\n");
+        return;
+    }
+    if (chdir(path) == -1)
+        printf("cd: %s: No such file or directory\n", path);
 }

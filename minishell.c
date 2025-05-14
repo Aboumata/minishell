@@ -28,6 +28,12 @@ static void	handle_input(char *input)
 		into_export(&g_env, args);
 		free_split(args);
 	}
+	else if (strncmp(input, "cd", 2) == 0 && input[2] == ' ')
+	{
+		args = split_by_spaces(input);
+		builtin_cd(args[1]);
+		free_split(args);
+	}
 }
 
 int	main(const int argc, char **argv, char *envp[])
