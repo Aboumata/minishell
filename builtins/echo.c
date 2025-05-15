@@ -1,34 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cd.c                                               :+:      :+:    :+:   */
+/*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aboumata <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/14 14:33:15 by aboumata          #+#    #+#             */
-/*   Updated: 2025/05/14 14:33:16 by aboumata         ###   ########.fr       */
+/*   Created: 2025/05/15 10:18:58 by aboumata          #+#    #+#             */
+/*   Updated: 2025/05/15 10:19:00 by aboumata         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
 
-char	**split_by_spaces(char *line)
+int	builtin_echo(char **argv)
 {
-	char	**args;
+	int	i;
+	int	new_line;
 
-	args = ft_split(line, ' ');
-	if (!args)
-		return (free_split(args), NULL);
-	return (args);
-}
-
-void	builtin_cd(char *path)
-{
-	if (!path)
+	i = 1;
+	new_line = 1;
+	while (argv[i] && ft_strncmp(argv[i], "-n", 2) == 0)
 	{
-		printf("cd: missing operand\n");
-		return ;
+		new_line = 0;
+		i++;
 	}
-	if (chdir(path) == -1)
-		printf("cd: %s: No such file or directory\n", path);
+	while (argv[i])
+	{
+		printf("%s", argv[i]);
+		if (argv[i + 1])
+			printf(" ");
+		i++;
+	}
+	if (new_line)
+		printf("\n");
+	return (0);
 }

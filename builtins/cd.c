@@ -1,23 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pwd.c                                              :+:      :+:    :+:   */
+/*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aboumata <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/14 16:45:36 by aboumata          #+#    #+#             */
-/*   Updated: 2025/05/14 16:45:43 by aboumata         ###   ########.fr       */
+/*   Created: 2025/05/14 14:33:15 by aboumata          #+#    #+#             */
+/*   Updated: 2025/05/14 14:33:16 by aboumata         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
 
-void	builtin_pwd(void)
+void	builtin_cd(char *path)
 {
-	char	buffer[4096];
-
-	if (getcwd(buffer, sizeof(buffer)) != NULL)
-		printf("%s\n", buffer);
-	else
-		perror("pwd");
+	if (!path)
+	{
+		printf("cd: missing operand\n");
+		return ;
+	}
+	if (chdir(path) == -1)
+		printf("cd: %s: No such file or directory\n", path);
 }

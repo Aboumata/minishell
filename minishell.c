@@ -45,7 +45,7 @@ static void	handle_input(char *input)
 	else if (ft_strncmp(input, "cd", 2) == 0 && (input[2] == '\0'
 			|| input[2] == ' '))
 	{
-		args = split_by_spaces(input);
+		args = mini_shell_split(input);
 		builtin_cd(args[1]);
 		free_split(args);
 	}

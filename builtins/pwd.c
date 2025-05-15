@@ -1,37 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   echo.c                                             :+:      :+:    :+:   */
+/*   pwd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aboumata <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/15 10:18:58 by aboumata          #+#    #+#             */
-/*   Updated: 2025/05/15 10:19:00 by aboumata         ###   ########.fr       */
+/*   Created: 2025/05/14 16:45:36 by aboumata          #+#    #+#             */
+/*   Updated: 2025/05/14 16:45:43 by aboumata         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
 
-int	builtin_echo(char **argv)
+void	builtin_pwd(void)
 {
-	int	i;
-	int	new_line;
+	char	buffer[4096];
 
-	i = 1;
-	new_line = 1;
-	while (argv[i] && ft_strncmp(argv[i], "-n", 2) == 0)
-	{
-		new_line = 0;
-		i++;
-	}
-	while (argv[i])
-	{
-		printf("%s", argv[i]);
-		if (argv[i + 1])
-			printf(" ");
-		i++;
-	}
-	if (new_line)
-		printf("\n");
-	return (0);
+	if (getcwd(buffer, sizeof(buffer)) != NULL)
+		printf("%s\n", buffer);
+	else
+		perror("pwd");
 }
