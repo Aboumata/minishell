@@ -12,3 +12,21 @@
 
 # include "minishell.h"
 
+int builtin_unset(char **argv, t_envs **env)
+{
+    int i;
+    (void) env;
+
+    i =1;
+    while (argv[i])
+    {
+        if (argv[i][0] == '-')
+        {
+            i++;
+            continue;
+        }
+        remove_env(&g_env, argv[i]);
+        i++;
+    }
+    return (0);
+}
