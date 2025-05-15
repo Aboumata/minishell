@@ -49,7 +49,12 @@ static void	handle_input(char *input)
 	}
 	else if (ft_strncmp(input, "pwd", 3) == 0 && (input[3] == '\0' || input[3] == ' '))
 		builtin_pwd();
-
+	else if (ft_strncmp(input, "echo", 4) == 0 && (input[4] == '\0' || input[4] == ' '))
+	{
+		args = mini_shell_split(input);
+		builtin_echo(args);
+		free_split(args);
+	}
 }
 
 int	main(const int argc, char **argv, char *envp[])
