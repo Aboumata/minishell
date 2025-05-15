@@ -64,8 +64,12 @@ static void	handle_input(char *input)
 		builtin_exit();
 	else if (strncmp(input, "unset", 5) == 0 && (input[5] == '\0'
 			|| input[5] == ' '))
-		builtin_unset(input, g_env);
+	{
+		args = mini_shell_split(input);
+		builtin_unset(args, &g_env);
+		free_split(args);
 	}
+}
 
 int	main(const int argc, char **argv, char *envp[])
 {
