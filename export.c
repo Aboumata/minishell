@@ -27,9 +27,8 @@ bool	is_valid(const char *str)
 			if (!(ft_isalpha(str[i]) || str[i] == '_'))
 				return (false);
 		}
-		else
-			if (!(ft_isalnum(str[i]) || str[i] == '_'))
-				return (false);
+		else if (!(ft_isalnum(str[i]) || str[i] == '_'))
+			return (false);
 		if (str[i] == ' ')
 			return (false);
 		i++;
@@ -111,7 +110,8 @@ void	set_env_var(t_envs **env, const char *arg)
 
 void	into_export(t_envs **env, char *arg[])
 {
-	int	i;
+	int		i;
+	char	*trimmed_arg;
 
 	if (!arg[1])
 	{
@@ -121,7 +121,7 @@ void	into_export(t_envs **env, char *arg[])
 	i = 1;
 	while (arg[i])
 	{
-		char *trimmed_arg = ft_strtrim(arg[i], " \t\n\r");
+		trimmed_arg = ft_strtrim(arg[i], " \t\n\r");
 		if (!is_valid(trimmed_arg))
 			printf("export: `%s': not a valid identifier\n", arg[i]);
 		else

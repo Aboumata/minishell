@@ -10,13 +10,14 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "minishell.h"
+#include "minishell.h"
 
-void builtin_pwd(void)
+void	builtin_pwd(void)
 {
-    char buffer[4096];
-    if (getcwd(buffer, sizeof(buffer)) != NULL)
-        printf("%s\n", buffer);
-    else
-        perror("pwd");
+	char	buffer[4096];
+
+	if (getcwd(buffer, sizeof(buffer)) != NULL)
+		printf("%s\n", buffer);
+	else
+		perror("pwd");
 }

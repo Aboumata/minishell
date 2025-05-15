@@ -12,25 +12,23 @@
 
 #include "minishell.h"
 
-char **split_by_spaces (char *line)
+char	**split_by_spaces(char *line)
 {
-    char **args;
+	char	**args;
 
-    args = ft_split(line, ' ');
-    if (!args)
-        return (free_split(args), NULL);
-
-    return (args);
+	args = ft_split(line, ' ');
+	if (!args)
+		return (free_split(args), NULL);
+	return (args);
 }
 
-void builtin_cd (char *path)
+void	builtin_cd(char *path)
 {
-
-    if (!path)
-    {
-        printf("cd: missing operand\n");
-        return;
-    }
-    if (chdir(path) == -1)
-        printf("cd: %s: No such file or directory\n", path);
+	if (!path)
+	{
+		printf("cd: missing operand\n");
+		return ;
+	}
+	if (chdir(path) == -1)
+		printf("cd: %s: No such file or directory\n", path);
 }
