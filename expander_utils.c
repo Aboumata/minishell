@@ -1,0 +1,57 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expander_utils.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aboumata <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/15 19:03:03 by aboumata          #+#    #+#             */
+/*   Updated: 2025/05/15 19:03:04 by aboumata         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "expander.h"
+
+int	expand_question(t_exp_ctx *ctx)
+{
+	char	*val;
+	int		len;
+
+	val = get_var_value("?", ctx->env, ctx->last_status);
+	len = write_value(val, ctx->out, ctx->j);
+	free(val);
+	return (1);
+}
+
+int	expand_name(t_exp_ctx *ctx)
+{
+	char	var[128];
+	int		v;
+	int		i;
+	char	*val;
+
+	v = 0;
+	i = ctx->idx;
+	while (is_var_char(ctx->input[i], v == 0) && v < 127)
+	{
+		var[v] = ctx->input[i];
+		v++;
+		i++;
+	}
+	var[v] = 0;
+	val = get_var_value(var, ctx->env, ctx->last_status);
+	write_value(val, ctx->out, ctx->j);
+	free(val);
+	return (i - ctx->idx);
+}
+
+int	replace_variable(t_exp_ctx *ctx)
+{
+	if (!ctx->input[ctx->idx])
+		return (0);
+	if (ctx->input[ctx->idx] == '?')
+		return (expand_question(ctx));
+	if (!is_var_char(ctx->input[ctx->idx], 1))
+		return (0);
+	return (expand_name(ctx));
+}

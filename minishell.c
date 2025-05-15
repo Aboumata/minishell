@@ -12,8 +12,10 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "expander.h"
 
 t_envs		*g_env = NULL;
+int			g_last_status = 0;
 
 void	handle_sigint(int sig)
 {
@@ -31,51 +33,68 @@ void	handle_sigquit(int sig)
 
 static void	handle_input(char *input)
 {
+	char	*expanded;
+	int		exit_status;
 	char	**args;
 
-	if (safe_strcmp(input, "env"))
+	expanded = expand_variables(input, g_env, g_last_status);
+
+	if (safe_strcmp(expanded, "env"))
+	{
 		print_env(g_env);
-	else if (ft_strncmp(input, "export", 6) == 0 && (input[6] == '\0'
-			|| input[6] == ' '))
+		g_last_status = 0;
+	}
+	else if (ft_strncmp(expanded, "export", 6) == 0 && (expanded[6] == '\0'
+			|| expanded[6] == ' '))
 	{
-		args = mini_shell_split(input);
-		builtin_export(&g_env, args);
+		args = mini_shell_split(expanded);
+		g_last_status = builtin_export(&g_env, args);
 		free_split(args);
 	}
-	else if (ft_strncmp(input, "cd", 2) == 0 && (input[2] == '\0'
-			|| input[2] == ' '))
+	else if (ft_strncmp(expanded, "cd", 2) == 0 && (expanded[2] == '\0'
+			|| expanded[2] == ' '))
 	{
-		args = mini_shell_split(input);
-		builtin_cd(args[1]);
+		args = mini_shell_split(expanded);
+		g_last_status = builtin_cd(args[1]);
 		free_split(args);
 	}
-	else if (ft_strncmp(input, "pwd", 3) == 0 && (input[3] == '\0'
-			|| input[3] == ' '))
-		builtin_pwd();
-	else if (ft_strncmp(input, "echo", 4) == 0 && (input[4] == '\0'
-			|| input[4] == ' '))
+	else if (ft_strncmp(expanded, "pwd", 3) == 0 && (expanded[3] == '\0'
+			|| expanded[3] == ' '))
 	{
-		args = mini_shell_split(input);
-		builtin_echo(args);
+		g_last_status = builtin_pwd();
+	}
+	else if (ft_strncmp(expanded, "echo", 4) == 0 && (expanded[4] == '\0'
+			|| expanded[4] == ' '))
+	{
+		args = mini_shell_split(expanded);
+		g_last_status = builtin_echo(args);
 		free_split(args);
 	}
-	else if (ft_strncmp(input, "exit", 4) == 0 && (input[4] == '\0'
-			|| input[4] == ' '))
-		builtin_exit();
-	else if (strncmp(input, "unset", 5) == 0 && (input[5] == '\0'
-			|| input[5] == ' '))
+	else if (ft_strncmp(expanded, "exit", 4) == 0 && (expanded[4] == '\0'
+			|| expanded[4] == ' '))
 	{
-		args = mini_shell_split(input);
-		builtin_unset(args, &g_env);
+		args = mini_shell_split(expanded);
+		exit_status = builtin_exit(args);
+		g_last_status = exit_status;
 		free_split(args);
 	}
+	else if (ft_strncmp(expanded, "unset", 5) == 0 && (expanded[5] == '\0'
+			|| expanded[5] == ' '))
+	{
+		args = mini_shell_split(expanded);
+		g_last_status = builtin_unset(args, &g_env);
+		free_split(args);
+	}
+	else
+		g_last_status = 127;
+	free(expanded);
 }
 
 int	main(const int argc, char **argv, char *envp[])
 {
 	char	*input;
-		char cwd[4096];
-		char prompt[4120];
+	char	cwd[4096];
+	char	prompt[4120];
 	char	*home;
 
 	g_env = init_env(envp);

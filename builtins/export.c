@@ -2,6 +2,7 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
+/*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aboumata <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,7 +11,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minishell.h"
+#include "../minishell.h"
 
 bool	is_valid(const char *str)
 {
@@ -108,25 +109,30 @@ void	set_env_var(t_envs **env, const char *arg)
 		*env = add_env(*env, arg, NULL);
 }
 
-void	builtin_export(t_envs **env, char *arg[])
+int builtin_export(t_envs **env, char *arg[])
 {
-	int		i;
-	char	*trimmed_arg;
+    int i;
+    char *trimmed_arg;
+    int status = 0;
 
-	if (!arg[1])
-	{
-		sorted_env(*env);
-		return ;
-	}
-	i = 1;
-	while (arg[i])
-	{
-		trimmed_arg = ft_strtrim(arg[i], " \t\n\r");
-		if (!is_valid(trimmed_arg))
-			printf("export: `%s': not a valid identifier\n", arg[i]);
-		else
-			set_env_var(env, trimmed_arg);
-		free(trimmed_arg);
-		i++;
-	}
+    if (!arg[1])
+    {
+        sorted_env(*env);
+        return 0;
+    }
+    i = 1;
+    while (arg[i])
+    {
+        trimmed_arg = ft_strtrim(arg[i], " \t\n\r");
+        if (!is_valid(trimmed_arg))
+        {
+            printf("export: `%s': not a valid identifier\n", arg[i]);
+            status = 1;
+        }
+        else
+            set_env_var(env, trimmed_arg);
+        free(trimmed_arg);
+        i++;
+    }
+    return status;
 }
