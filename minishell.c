@@ -38,7 +38,6 @@ static void	handle_input(char *input)
 	char	**args;
 
 	expanded = expand_variables(input, g_env, g_last_status);
-
 	if (safe_strcmp(expanded, "env"))
 	{
 		print_env(g_env);
