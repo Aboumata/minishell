@@ -39,7 +39,7 @@ static void	handle_input(char *input)
 			|| input[6] == ' '))
 	{
 		args = mini_shell_split(input);
-		into_export(&g_env, args);
+		builtin_export(&g_env, args);
 		free_split(args);
 	}
 	else if (ft_strncmp(input, "cd", 2) == 0 && (input[2] == '\0'
@@ -59,7 +59,13 @@ static void	handle_input(char *input)
 		builtin_echo(args);
 		free_split(args);
 	}
-}
+	else if (ft_strncmp(input, "exit", 4) == 0 && (input[4] == '\0'
+			|| input[4] == ' '))
+		builtin_exit();
+	else if (strncmp(input, "unset", 5) == 0 && (input[5] == '\0'
+			|| input[5] == ' '))
+		builtin_unset(input, g_env);
+	}
 
 int	main(const int argc, char **argv, char *envp[])
 {

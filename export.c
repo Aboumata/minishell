@@ -108,7 +108,7 @@ void	set_env_var(t_envs **env, const char *arg)
 		*env = add_env(*env, arg, NULL);
 }
 
-void	into_export(t_envs **env, char *arg[])
+void	builtin_export(t_envs **env, char *arg[])
 {
 	int		i;
 	char	*trimmed_arg;

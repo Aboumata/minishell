@@ -44,12 +44,14 @@ void				quick_sort(t_envs **arr, const int low, const int high);
 void				sorted_env(t_envs *env);
 t_envs				*add_env(t_envs *env, const char *names,
 						const char *values);
-void				into_export(t_envs **env, char *arg[]);
+void				builtin_export(t_envs **env, char *arg[]);
 void				free_split(char **result);
 char				**mini_shell_split(const char *str);
 void				builtin_cd(char *path);
 char				**split_by_spaces(char *line);
 void				builtin_pwd(void);
 int					builtin_echo(char **argv);
+void				builtin_exit(void);
+int					builtin_unset(char **argv, t_envs **env);
 
 #endif
