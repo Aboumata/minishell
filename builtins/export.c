@@ -109,30 +109,39 @@ void	set_env_var(t_envs **env, const char *arg)
 		*env = add_env(*env, arg, NULL);
 }
 
-int builtin_export(t_envs **env, char *arg[])
+int	builtin_export(t_envs **env, char *arg[])
 {
-    int i;
-    char *trimmed_arg;
-    int status = 0;
+	int		i;
+	char	*trimmed_arg;
+	int		status;
+	char 	*name_end;
+	char 	*var_name;
 
-    if (!arg[1])
-    {
-        sorted_env(*env);
-        return 0;
-    }
-    i = 1;
-    while (arg[i])
-    {
-        trimmed_arg = ft_strtrim(arg[i], " \t\n\r");
-        if (!is_valid(trimmed_arg))
-        {
-            printf("minishell: export: `%s': not a valid identifier\n", arg[i]);
-            status = 1;
-        }
-        else
-            set_env_var(env, trimmed_arg);
-        free(trimmed_arg);
-        i++;
-    }
-    return status;
+	status = 0;
+	if (!arg[1])
+	{
+		sorted_env(*env);
+		return (0);
+	}
+	i = 1;
+	while (arg[i])
+	{
+		trimmed_arg = ft_strtrim(arg[i], " \t\n\r");
+		name_end = ft_strchr(trimmed_arg, '=');
+		if (name_end)
+			var_name = ft_substr(trimmed_arg, 0, name_end - trimmed_arg);
+		else
+			var_name = ft_strdup(trimmed_arg);
+		if (!is_valid(trimmed_arg))
+		{
+			printf("minishell: export: `%s': not a valid identifier\n", arg[i]);
+			status = 1;
+		}
+		else
+			set_env_var(env, trimmed_arg);
+		free(var_name);
+		free(trimmed_arg);
+		i++;
+	}
+	return (status);
 }
