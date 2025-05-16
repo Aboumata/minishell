@@ -47,8 +47,32 @@ int	expand_name(t_exp_ctx *ctx)
 
 int	replace_variable(t_exp_ctx *ctx)
 {
+	int		start;
+	int		end;
+	char	var[128];
+	int		len;
+	char	*val;
+
 	if (!ctx->input[ctx->idx])
 		return (0);
+	if (ctx->input[ctx->idx] == '{')
+	{
+		start = ctx->idx + 1;
+		end = start;
+		while (ctx->input[end] && ctx->input[end] != '}' && (end - start) < 127)
+			end++;
+		if (ctx->input[end] != '}')
+			return (0);
+		len = end - start;
+		if (len <= 0 || len >= 127)
+			return (0);
+		memcpy(var, &(ctx->input[start]), len);
+		var[len] = '\0';
+		val = get_var_value(var, ctx->env, ctx->last_status);
+		write_value(val, ctx->out, ctx->j);
+		free(val);
+		return (end - ctx->idx + 1);
+	}
 	if (ctx->input[ctx->idx] == '?')
 		return (expand_question(ctx));
 	if (!is_var_char(ctx->input[ctx->idx], 1))
