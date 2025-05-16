@@ -45,12 +45,14 @@ static void	set_append_env_var(t_envs **env, const char *arg, char *plus_equal)
 {
 	t_envs	*node;
 	char	*name;
+	char	*value_raw;
 	char	*value;
 	char	*old;
 	char	*new_val;
 
 	name = ft_substr(arg, 0, plus_equal - arg);
-	value = plus_equal + 2;
+	value_raw = plus_equal + 2;
+	value = strip_quotes(value_raw);
 	node = get_env(*env, name);
 	if (node)
 	{
@@ -65,16 +67,19 @@ static void	set_append_env_var(t_envs **env, const char *arg, char *plus_equal)
 	else
 		*env = add_env(*env, name, value);
 	free(name);
+	free(value);
 }
 
 static void	set_equal_env_var(t_envs **env, const char *arg, char *equal)
 {
 	t_envs	*node;
 	char	*name;
+	char	*value_raw;
 	char	*value;
 
 	name = ft_substr(arg, 0, equal - arg);
-	value = equal + 1;
+	value_raw = equal + 1;
+	value = strip_quotes(value_raw);
 	node = get_env(*env, name);
 	if (node)
 	{
@@ -84,6 +89,7 @@ static void	set_equal_env_var(t_envs **env, const char *arg, char *equal)
 	else
 		*env = add_env(*env, name, value);
 	free(name);
+	free(value);
 }
 
 void	set_env_var(t_envs **env, const char *arg)
@@ -114,7 +120,6 @@ int	builtin_export(t_envs **env, char *arg[])
 	int		i;
 	char	*trimmed_arg;
 	int		status;
-	char 	*name_end;
 	char 	*var_name;
 
 	status = 0;
@@ -127,18 +132,23 @@ int	builtin_export(t_envs **env, char *arg[])
 	while (arg[i])
 	{
 		trimmed_arg = ft_strtrim(arg[i], " \t\n\r");
-		name_end = ft_strchr(trimmed_arg, '=');
-		if (name_end)
-			var_name = ft_substr(trimmed_arg, 0, name_end - trimmed_arg);
-		else
-			var_name = ft_strdup(trimmed_arg);
-		if (!is_valid(trimmed_arg))
-		{
+		if (!trimmed_arg || trimmed_arg[0] == '\0') {
+			free(trimmed_arg);
+			i++;
+			continue;
+		}
+		int name_len = 0;
+		while (trimmed_arg[name_len] &&
+			   trimmed_arg[name_len] != '=' &&
+			   !(trimmed_arg[name_len] == '+' && trimmed_arg[name_len+1] == '='))
+			name_len++;
+		var_name = ft_substr(trimmed_arg, 0, name_len);
+		if (var_name[0] == '\0' || !is_valid(var_name)) {
 			printf("minishell: export: `%s': not a valid identifier\n", arg[i]);
 			status = 1;
-		}
-		else
+		} else {
 			set_env_var(env, trimmed_arg);
+		}
 		free(var_name);
 		free(trimmed_arg);
 		i++;
