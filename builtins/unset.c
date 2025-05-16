@@ -25,7 +25,7 @@ int	builtin_unset(char **argv, t_envs **env)
 			i++;
 			continue ;
 		}
-		remove_env(&g_env, argv[i]);
+		remove_env(env, argv[i]);
 		i++;
 	}
 	return (0);

@@ -33,60 +33,61 @@ void	handle_sigquit(int sig)
 
 static void	handle_input(char *input)
 {
-	char	*expanded;
+	char	*expanded = NULL;
 	int		exit_status;
-	char	**args;
+	char	**args = NULL;
 
-	expanded = expand_variables(input, g_env, g_last_status);
-	if (safe_strcmp(expanded, "env"))
+	if (ft_strncmp(input, "export", 6) == 0 && (input[6] == '\0' || input[6] == ' '))
 	{
-		print_env(g_env);
-		g_last_status = 0;
-	}
-	else if (ft_strncmp(expanded, "export", 6) == 0 && (expanded[6] == '\0'
-			|| expanded[6] == ' '))
-	{
-		args = mini_shell_split(expanded);
+		args = mini_shell_split(input);
 		g_last_status = builtin_export(&g_env, args);
 		free_split(args);
 	}
-	else if (ft_strncmp(expanded, "cd", 2) == 0 && (expanded[2] == '\0'
-			|| expanded[2] == ' '))
+	else if (ft_strncmp(input, "unset", 5) == 0 && (input[5] == '\0' || input[5] == ' '))
 	{
-		args = mini_shell_split(expanded);
-		g_last_status = builtin_cd(args[1]);
-		free_split(args);
-	}
-	else if (ft_strncmp(expanded, "pwd", 3) == 0 && (expanded[3] == '\0'
-			|| expanded[3] == ' '))
-	{
-		g_last_status = builtin_pwd();
-	}
-	else if (ft_strncmp(expanded, "echo", 4) == 0 && (expanded[4] == '\0'
-			|| expanded[4] == ' '))
-	{
-		args = mini_shell_split(expanded);
-		g_last_status = builtin_echo(args);
-		free_split(args);
-	}
-	else if (ft_strncmp(expanded, "exit", 4) == 0 && (expanded[4] == '\0'
-			|| expanded[4] == ' '))
-	{
-		args = mini_shell_split(expanded);
-		exit_status = builtin_exit(args);
-		g_last_status = exit_status;
-		free_split(args);
-	}
-	else if (ft_strncmp(expanded, "unset", 5) == 0 && (expanded[5] == '\0'
-			|| expanded[5] == ' '))
-	{
-		args = mini_shell_split(expanded);
+		args = mini_shell_split(input);
 		g_last_status = builtin_unset(args, &g_env);
 		free_split(args);
 	}
 	else
-		g_last_status = 127;
-	free(expanded);
+	{
+		expanded = expand_variables(input, g_env, g_last_status);
+		if (safe_strcmp(expanded, "env"))
+		{
+			print_env(g_env);
+			g_last_status = 0;
+		}
+		else if (ft_strncmp(expanded, "cd", 2) == 0 && (expanded[2] == '\0'
+				|| expanded[2] == ' '))
+		{
+			args = mini_shell_split(expanded);
+			g_last_status = builtin_cd(args[1]);
+			free_split(args);
+		}
+		else if (ft_strncmp(expanded, "pwd", 3) == 0 && (expanded[3] == '\0'
+				|| expanded[3] == ' '))
+		{
+			g_last_status = builtin_pwd();
+		}
+		else if (ft_strncmp(expanded, "echo", 4) == 0 && (expanded[4] == '\0'
+				|| expanded[4] == ' '))
+		{
+			args = mini_shell_split(expanded);
+			g_last_status = builtin_echo(args);
+			free_split(args);
+		}
+		else if (ft_strncmp(expanded, "exit", 4) == 0 && (expanded[4] == '\0'
+				|| expanded[4] == ' '))
+		{
+			args = mini_shell_split(expanded);
+			exit_status = builtin_exit(args);
+			g_last_status = exit_status;
+			free_split(args);
+		}
+		else
+			g_last_status = 127;
+		free(expanded);
+	}
 }
 
 int	main(const int argc, char **argv, char *envp[])

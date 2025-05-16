@@ -52,5 +52,6 @@ int					builtin_pwd(void);
 int					builtin_echo(char **argv);
 int					builtin_exit(char **argv);
 int					builtin_unset(char **argv, t_envs **env);
+char				*strip_quotes(const char *value);
 
 #endif
