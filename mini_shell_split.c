@@ -12,114 +12,112 @@
 
 #include "minishell.h"
 
-static void	skip_spaces(const char *s, int *i)
-{
-	while (s[*i] && (s[*i] == ' ' || s[*i] == '\t'))
-		(*i)++;
+static bool  is_whitespace(char c) {
+    return (c == ' ' || c == '\t');
 }
 
-static int	count_args(const char *s)
-{
-	int		i;
-	int		count;
-	bool	in_word;
-	char	quote;
-
-	i = 0;
-	count = 0;
-	in_word = false;
-	quote = 0;
-	while (s[i])
-	{
-		skip_spaces(s, &i);
-		if (!s[i])
-			break ;
-		in_word = true;
-		if (s[i] == '\'' || s[i] == '\"')
-		{
-			quote = s[i++];
-			while (s[i] && s[i] != quote)
-				i++;
-			if (s[i] == quote)
-				i++;
-		}
-		else
-		{
-			while (s[i] && s[i] != ' ' && s[i] != '\t' && s[i] != '\''
-				&& s[i] != '\"')
-				i++;
-		}
-		count++;
-		skip_spaces(s, &i);
-	}
-	return (count);
+static int is_special(const char *s, int i) {
+    if (s[i] == '|')
+        return 1;
+    if (s[i] == '<' && s[i + 1] == '<')
+        return 2;
+    if (s[i] == '>' && s[i + 1] == '>')
+        return 2;
+    if (s[i] == '<' || s[i] == '>')
+        return 1;
+    return 0;
 }
 
-static char	*extract_token(const char *s, int *i)
-{
-	char	quote;
-	char	*res;
-
-	int start, end, j = 0;
-	quote = 0;
-	skip_spaces(s, i);
-	if (s[*i] == '\'' || s[*i] == '\"')
-	{
-		quote = s[*i];
-		start = ++(*i);
-		end = start;
-		while (s[end] && s[end] != quote)
-			end++;
-		res = (char *)malloc(end - start + 1);
-		if (!res)
-			return (NULL);
-		while (*i < end)
-			res[j++] = s[(*i)++];
-		res[j] = 0;
-		if (s[*i] == quote)
-			(*i)++;
-	}
-	else
-	{
-		start = *i;
-		while (s[*i] && s[*i] != ' ' && s[*i] != '\t' && s[*i] != '\''
-			&& s[*i] != '\"')
-			(*i)++;
-		res = (char *)malloc(*i - start + 1);
-		if (!res)
-			return (NULL);
-		while (start < *i)
-			res[j++] = s[start++];
-		res[j] = 0;
-	}
-	return (res);
+static void skip_spaces(const char *s, int *i) {
+    while (s[*i] && is_whitespace(s[*i]))
+        (*i)++;
 }
 
-char	**mini_shell_split(const char *s)
-{
-	int		num;
-	char	**out;
-	int		i;
-	int		k;
+static char *extract_token(const char *s, int *i) {
+    int start, len;
+    char quote = 0;
+    int special_len;
+    char *res;
 
-	num = count_args(s);
-	out = (char **)malloc((num + 1) * sizeof(char *));
-	i = 0;
-	k = 0;
-	if (!out)
-		return (NULL);
-	while (k < num)
-	{
-		out[k] = extract_token(s, &i);
-		if (!out[k])
-		{
-			while (k > 0)
-				free(out[--k]);
-			free(out);
-			return (NULL);
-		}
-		k++;
-	}
-	out[k] = NULL;
-	return (out);
+    skip_spaces(s, i);
+    if (!s[*i])
+        return NULL;
+    if ((special_len = is_special(s, *i))) {
+        res = malloc(special_len + 1);
+        if (!res) return NULL;
+        memcpy(res, &s[*i], special_len);
+        res[special_len] = 0;
+        *i += special_len;
+        return res;
+    }
+    if (s[*i] == '\'' || s[*i] == '"') {
+        quote = s[(*i)++];
+        start = *i;
+        while (s[*i] && s[*i] != quote)
+            (*i)++;
+        len = *i - start;
+        res = malloc(len + 1);
+        if (!res) return NULL;
+        memcpy(res, &s[start], len);
+        res[len] = 0;
+        if (s[*i] == quote) (*i)++;
+        return res;
+    }
+    start = *i;
+    while (s[*i] && !is_whitespace(s[*i]) && !is_special(s, *i)) {
+        if (s[*i] == '\'' || s[*i] == '"') {
+            quote = s[(*i)++];
+            while (s[*i] && s[*i] != quote)
+                (*i)++;
+            if (s[*i] == quote) (*i)++;
+        } else {
+            (*i)++;
+        }
+    }
+    len = *i - start;
+    res = malloc(len + 1);
+    if (!res) return NULL;
+    memcpy(res, &s[start], len);
+    res[len] = 0;
+    return res;
+}
+
+static int count_args(const char *s) {
+    int i = 0, count = 0;
+    char *tok;
+    int save_i;
+
+    while (1) {
+        save_i = i;
+        tok = extract_token(s, &i);
+        if (!tok)
+            break;
+        count++;
+        free(tok);
+    }
+    return count;
+}
+
+char **mini_shell_split(const char *s) {
+    int num, i = 0, k = 0;
+    char **out;
+    char *tok;
+
+    num = count_args(s);
+    out = malloc((num + 1) * sizeof(char *));
+    if (!out)
+        return NULL;
+    i = 0;
+    while (k < num) {
+        tok = extract_token(s, &i);
+        if (!tok) {
+            while (k > 0)
+                free(out[--k]);
+            free(out);
+            return NULL;
+        }
+        out[k++] = tok;
+    }
+    out[k] = NULL;
+    return out;
 }
