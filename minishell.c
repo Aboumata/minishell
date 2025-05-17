@@ -76,6 +76,11 @@ static void	handle_input(char *input)
 			g_last_status = builtin_echo(args);
 			free_split(args);
 		}
+		else if (ft_strncmp(expanded, "clear", 5) == 0 && (expanded[5] == '\0' ||
+			expanded[5] == ' '))
+		{
+			builtin_clear();
+		}
 		else if (ft_strncmp(expanded, "exit", 4) == 0 && (expanded[4] == '\0'
 				|| expanded[4] == ' '))
 		{

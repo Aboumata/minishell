@@ -22,6 +22,7 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <curses.h>
+# include <term.h>
 
 typedef struct s_envs
 {
@@ -54,5 +55,6 @@ int					builtin_echo(char **argv);
 int					builtin_exit(char **argv);
 int					builtin_unset(char **argv, t_envs **env);
 char				*strip_quotes(const char *value);
+int					builtin_clear(void);
 
 #endif

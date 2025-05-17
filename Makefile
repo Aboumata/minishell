@@ -1,17 +1,17 @@
 CC = cc
 CFLAGS = -Wall -Wextra -Werror
 
-SRC = free_env.c minishell.c utils_env.c quick_sort.c minishell_clear.c\
+SRC = free_env.c minishell.c utils_env.c quick_sort.c\
 	  utils_export.c mini_shell_split.c expander.c expander_utils.c\
 	  builtins/cd.c builtins/pwd.c builtins/echo.c builtins/env.c \
-	  builtins/exit.c builtins/export.c builtins/unset.c \
+	  builtins/exit.c builtins/export.c builtins/unset.c builtins/clear.c\
 
 OBJCS = ${SRC:.c=.o}
 
 NAME = minishell
 LIBFT_DIR = libft
 LIBFT = ${LIBFT_DIR}/libft.a
-LDFLAGS = -lreadline
+LDFLAGS = -lreadline -ltinfo
 
 all: ${NAME}
 
