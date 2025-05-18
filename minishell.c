@@ -11,8 +11,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
 #include "expander.h"
+#include "minishell.h"
 
 t_envs		*g_env = NULL;
 int			g_last_status = 0;
@@ -33,17 +33,21 @@ void	handle_sigquit(int sig)
 
 static void	handle_input(char *input)
 {
-	char	*expanded = NULL;
+	char	*expanded;
 	int		exit_status;
-	char	**args = NULL;
+	char	**args;
 
-	if (ft_strncmp(input, "export", 6) == 0 && (input[6] == '\0' || input[6] == ' '))
+	expanded = NULL;
+	args = NULL;
+	if (ft_strncmp(input, "export", 6) == 0 && (input[6] == '\0'
+			|| input[6] == ' '))
 	{
 		args = mini_shell_split(input);
 		g_last_status = builtin_export(&g_env, args);
 		free_split(args);
 	}
-	else if (ft_strncmp(input, "unset", 5) == 0 && (input[5] == '\0' || input[5] == ' '))
+	else if (ft_strncmp(input, "unset", 5) == 0 && (input[5] == '\0'
+			|| input[5] == ' '))
 	{
 		args = mini_shell_split(input);
 		g_last_status = builtin_unset(args, &g_env);
@@ -77,12 +81,12 @@ static void	handle_input(char *input)
 			free_split(args);
 		}
 		else if (ft_strncmp(expanded, "clear", 5) == 0 && (expanded[5] == '\0'
-			|| expanded[5] == ' '))
+				|| expanded[5] == ' '))
 		{
 			builtin_clear();
 		}
 		else if (ft_strncmp(expanded, "exit", 4) == 0 && (expanded[4] == '\0'
-			|| expanded[4] == ' '))
+				|| expanded[4] == ' '))
 		{
 			args = mini_shell_split(expanded);
 			exit_status = builtin_exit(args);
@@ -93,7 +97,6 @@ static void	handle_input(char *input)
 			g_env = NULL;
 			exit(exit_status);
 		}
-
 		else
 			g_last_status = 127;
 		free(expanded);

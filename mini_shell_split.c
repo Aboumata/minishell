@@ -12,112 +12,136 @@
 
 #include "minishell.h"
 
-static bool  is_whitespace(char c) {
-    return (c == ' ' || c == '\t');
+static bool	is_whitespace(char c)
+{
+	return (c == ' ' || c == '\t');
 }
 
-static int is_special(const char *s, int i) {
-    if (s[i] == '|')
-        return 1;
-    if (s[i] == '<' && s[i + 1] == '<')
-        return 2;
-    if (s[i] == '>' && s[i + 1] == '>')
-        return 2;
-    if (s[i] == '<' || s[i] == '>')
-        return 1;
-    return 0;
+static int	is_special(const char *s, int i)
+{
+	if (s[i] == '|')
+		return (1);
+	if (s[i] == '<' && s[i + 1] == '<')
+		return (2);
+	if (s[i] == '>' && s[i + 1] == '>')
+		return (2);
+	if (s[i] == '<' || s[i] == '>')
+		return (1);
+	return (0);
 }
 
-static void skip_spaces(const char *s, int *i) {
-    while (s[*i] && is_whitespace(s[*i]))
-        (*i)++;
+static void	skip_spaces(const char *s, int *i)
+{
+	while (s[*i] && is_whitespace(s[*i]))
+		(*i)++;
 }
 
-static char *extract_token(const char *s, int *i) {
-    int start, len;
-    char quote = 0;
-    int special_len;
-    char *res;
+static char	*extract_token(const char *s, int *i)
+{
+	char	quote;
+	int		special_len;
+	char	*res;
 
-    skip_spaces(s, i);
-    if (!s[*i])
-        return NULL;
-    if ((special_len = is_special(s, *i))) {
-        res = malloc(special_len + 1);
-        if (!res) return NULL;
-        memcpy(res, &s[*i], special_len);
-        res[special_len] = 0;
-        *i += special_len;
-        return res;
-    }
-    if (s[*i] == '\'' || s[*i] == '"') {
-        quote = s[(*i)++];
-        start = *i;
-        while (s[*i] && s[*i] != quote)
-            (*i)++;
-        len = *i - start;
-        res = malloc(len + 1);
-        if (!res) return NULL;
-        memcpy(res, &s[start], len);
-        res[len] = 0;
-        if (s[*i] == quote) (*i)++;
-        return res;
-    }
-    start = *i;
-    while (s[*i] && !is_whitespace(s[*i]) && !is_special(s, *i)) {
-        if (s[*i] == '\'' || s[*i] == '"') {
-            quote = s[(*i)++];
-            while (s[*i] && s[*i] != quote)
-                (*i)++;
-            if (s[*i] == quote) (*i)++;
-        } else {
-            (*i)++;
-        }
-    }
-    len = *i - start;
-    res = malloc(len + 1);
-    if (!res) return NULL;
-    memcpy(res, &s[start], len);
-    res[len] = 0;
-    return res;
+	int start, len;
+	quote = 0;
+	skip_spaces(s, i);
+	if (!s[*i])
+		return (NULL);
+	if ((special_len = is_special(s, *i)))
+	{
+		res = malloc(special_len + 1);
+		if (!res)
+			return (NULL);
+		memcpy(res, &s[*i], special_len);
+		res[special_len] = 0;
+		*i += special_len;
+		return (res);
+	}
+	if (s[*i] == '\'' || s[*i] == '"')
+	{
+		quote = s[(*i)++];
+		start = *i;
+		while (s[*i] && s[*i] != quote)
+			(*i)++;
+		len = *i - start;
+		res = malloc(len + 1);
+		if (!res)
+			return (NULL);
+		memcpy(res, &s[start], len);
+		res[len] = 0;
+		if (s[*i] == quote)
+			(*i)++;
+		return (res);
+	}
+	start = *i;
+	while (s[*i] && !is_whitespace(s[*i]) && !is_special(s, *i))
+	{
+		if (s[*i] == '\'' || s[*i] == '"')
+		{
+			quote = s[(*i)++];
+			while (s[*i] && s[*i] != quote)
+				(*i)++;
+			if (s[*i] == quote)
+				(*i)++;
+		}
+		else
+		{
+			(*i)++;
+		}
+	}
+	len = *i - start;
+	res = malloc(len + 1);
+	if (!res)
+		return (NULL);
+	memcpy(res, &s[start], len);
+	res[len] = 0;
+	return (res);
 }
 
-static int count_args(const char *s) {
-    int i = 0, count = 0;
-    char *tok;
-    int save_i;
+static int	count_args(const char *s)
+{
+	int		i;
+	char	*tok;
+	int		save_i;
+	int		count;
 
-    while (1) {
-        save_i = i;
-        tok = extract_token(s, &i);
-        if (!tok)
-            break;
-        count++;
-        free(tok);
-    }
-    return count;
+	i = 0, count;
+	i = 0, count = 0;
+	while (1)
+	{
+		save_i = i;
+		tok = extract_token(s, &i);
+		if (!tok)
+			break ;
+		count++;
+		free(tok);
+	}
+	return (count);
 }
 
-char **mini_shell_split(const char *s) {
-    int num, i = 0, k = 0;
-    char **out;
-    char *tok;
+char	**mini_shell_split(const char *s)
+{
+	char	**out;
+	char	*tok;
 
-    num = count_args(s);
-    out = malloc((num + 1) * sizeof(char *));
-    if (!out)
-        return NULL;
-    i = 0;
-    while (k < num) {
-        tok = extract_token(s, &i);
-        if (!tok) {
-            while (k > 0)
-                free(out[--k]);
-            free(out);
-            return NULL;
-        }
-        out[k++] = tok;
-    }
-    out[k] = NULL;
-    return out;
+	int num, i = 0, k = 0;
+	num = count_args(s);
+	out = malloc((num + 1) * sizeof(char *));
+	if (!out)
+		return (NULL);
+	i = 0;
+	while (k < num)
+	{
+		tok = extract_token(s, &i);
+		if (!tok)
+		{
+			while (k > 0)
+				free(out[--k]);
+			free(out);
+			return (NULL);
+		}
+		out[k++] = tok;
+	}
+	out[k] = NULL;
+	return (out);
 }

@@ -66,8 +66,8 @@ char	*expand_variables(const char *input, t_envs *env, int last_status)
 	char		*out;
 	int			i;
 	int			j;
-	int in_single_quotes;
-	int in_double_quotes;
+	int			in_single_quotes;
+	int			in_double_quotes;
 	t_exp_ctx	ctx;
 
 	out = malloc(4096);
@@ -83,7 +83,7 @@ char	*expand_variables(const char *input, t_envs *env, int last_status)
 			out[j++] = input[i++];
 			continue ;
 		}
-		if (input[i] == '"' && !in_single_quotes )
+		if (input[i] == '"' && !in_single_quotes)
 		{
 			in_double_quotes = !in_double_quotes;
 			out[j++] = input[i++];

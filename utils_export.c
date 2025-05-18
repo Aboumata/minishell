@@ -70,10 +70,11 @@ t_envs	*add_env(t_envs *env, const char *names, const char *values)
 
 char	*strip_quotes(const char *value)
 {
-	size_t	len = ft_strlen(value);
+	size_t	len;
 
-	if ((len >= 2) && ((value[0] == '\'' && value[len-1] == '\'') ||
-					   (value[0] == '"' && value[len-1] == '"')))
-		return ft_substr(value, 1, len - 2);
-	return ft_strdup(value);
+	len = ft_strlen(value);
+	if ((len >= 2) && ((value[0] == '\'' && value[len - 1] == '\'')
+			|| (value[0] == '"' && value[len - 1] == '"')))
+		return (ft_substr(value, 1, len - 2));
+	return (ft_strdup(value));
 }
