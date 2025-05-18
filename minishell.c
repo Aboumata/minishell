@@ -82,13 +82,18 @@ static void	handle_input(char *input)
 			builtin_clear();
 		}
 		else if (ft_strncmp(expanded, "exit", 4) == 0 && (expanded[4] == '\0'
-				|| expanded[4] == ' '))
+			|| expanded[4] == ' '))
 		{
 			args = mini_shell_split(expanded);
 			exit_status = builtin_exit(args);
-			g_last_status = exit_status;
 			free_split(args);
+			free(expanded);
+			clear_history();
+			free_env(g_env);
+			g_env = NULL;
+			exit(exit_status);
 		}
+
 		else
 			g_last_status = 127;
 		free(expanded);
@@ -134,5 +139,6 @@ int	main(const int argc, char **argv, char *envp[])
 	}
 	clear_history();
 	free_env(g_env);
+	g_env = NULL;
 	return (0);
 }

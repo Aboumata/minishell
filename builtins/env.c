@@ -104,6 +104,7 @@ t_envs	*init_env(char *envp[])
 		new_env = create_env(envp[i]);
 		if (new_env != NULL)
 		{
+			remove_env(&env, new_env->names);
 			new_env->next = env;
 			env = new_env;
 		}
