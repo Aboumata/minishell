@@ -12,18 +12,18 @@
 
 #include "../minishell.h"
 
-int builtin_pwd(void)
+int	builtin_pwd(void)
 {
-    char buffer[4096];
+	char	buffer[4096];
 
-    if (getcwd(buffer, sizeof(buffer)) != NULL)
-    {
-        printf("%s\n", buffer);
-        return 0;
-    }
-    else
-    {
-        perror("pwd");
-        return 1;
-    }
+	if (getcwd(buffer, sizeof(buffer)) != NULL)
+	{
+		printf("%s\n", buffer);
+		return (0);
+	}
+	else
+	{
+		perror("pwd");
+		return (1);
+	}
 }

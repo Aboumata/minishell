@@ -105,7 +105,7 @@ static int	count_args(const char *s)
 	int		save_i;
 	int		count;
 
-	i = 0, count;
+	i = 0;
 	i = 0, count = 0;
 	while (1)
 	{
