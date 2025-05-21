@@ -1,5 +1,5 @@
 CC = cc
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -g -Wall -Wextra -Werror
 
 SRC = free_env.c minishell.c utils_env.c quick_sort.c\
 	  utils_export.c mini_shell_split.c expander.c expander_utils.c\
