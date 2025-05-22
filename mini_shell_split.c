@@ -124,12 +124,13 @@ char	**mini_shell_split(const char *s)
 	char	**out;
 	char	*tok;
 
-	int num, i = 0, k = 0;
+	int (num), i, k;
 	num = count_args(s);
 	out = malloc((num + 1) * sizeof(char *));
 	if (!out)
 		return (NULL);
 	i = 0;
+	k = 0;
 	while (k < num)
 	{
 		tok = extract_token(s, &i);
