@@ -11,7 +11,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "expander.h"
+#include "parsing/expander.h"
 #include "minishell.h"
 
 t_envs	*g_env = NULL;

@@ -2,8 +2,8 @@ CC = cc
 CFLAGS = -g -Wall -Wextra -Werror
 
 SRC = free_env.c minishell.c utils_env.c quick_sort.c\
-	  utils_export.c mini_shell_split.c expander.c expander_utils.c\
-	  builtins/cd.c builtins/pwd.c builtins/echo.c builtins/env.c \
+	  parsing/utils_export.c parsing/mini_shell_split.c parsing/expander.c\
+	  parsing/expander_utils.c builtins/cd.c builtins/pwd.c builtins/echo.c builtins/env.c \
 	  builtins/exit.c builtins/export.c builtins/unset.c builtins/clear.c\
 
 OBJCS = ${SRC:.c=.o}
