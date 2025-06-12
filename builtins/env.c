@@ -50,21 +50,22 @@ t_envs	*get_env(t_envs *env, const char *name)
 	return (NULL);
 }
 
-void	update_env(t_envs *env, const char *name, const char *new_value)
+void update_env(t_envs *env, const char *name, const char *new_value)
 {
-	t_envs	*node;
-	char	*joined;
-	char	*temp;
+	t_envs *node = get_env(env, name);
+	if (!node || !node->values) return;
 
-	node = get_env(env, name);
-	if (node)
-	{
-		temp = ft_strjoin(node->values, ":");
-		joined = ft_strjoin(temp, new_value);
-		free(temp);
-		free(node->values);
-		node->values = joined;
-	}
+	char *temp = ft_strjoin(node->values, ":");
+	if (!temp)
+		return;
+
+	char *joined = ft_strjoin(temp, new_value);
+	free(temp);
+	if (!joined)
+		return;
+
+	free(node->values);
+	node->values = joined;
 }
 
 t_envs	*create_env(const char *env_strs)
