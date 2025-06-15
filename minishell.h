@@ -56,5 +56,7 @@ int					builtin_exit(char **argv);
 int					builtin_unset(char **argv, t_envs **env);
 char				*strip_quotes(const char *value);
 int					builtin_clear(void);
+t_envs				*copy_env_node(t_envs *node);
+t_envs				*copy_env_list(t_envs *env);
 
 #endif
