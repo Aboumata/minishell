@@ -60,9 +60,11 @@ t_envs	*copy_env_list(t_envs *env)
         }
         else
         {
+            assert(new_tail != NULL);  // Debug assertion
             new_tail->next = new_node;
             new_tail = new_node;
         }
+
         env = env->next;
     }
     return (new_head);
