@@ -52,7 +52,7 @@ static char	*extract_token(const char *s, int *i)
 		res = malloc(special_len + 1);
 		if (!res)
 			return (NULL);
-		memcpy(res, &s[*i], special_len);
+		ft_memcpy(res, &s[*i], special_len);
 		res[special_len] = 0;
 		*i += special_len;
 		return (res);
@@ -67,7 +67,7 @@ static char	*extract_token(const char *s, int *i)
 		res = malloc(len + 1);
 		if (!res)
 			return (NULL);
-		memcpy(res, &s[start], len);
+		ft_memcpy(res, &s[start], len);
 		res[len] = 0;
 		if (s[*i] == quote)
 			(*i)++;
@@ -93,7 +93,7 @@ static char	*extract_token(const char *s, int *i)
 	res = malloc(len + 1);
 	if (!res)
 		return (NULL);
-	memcpy(res, &s[start], len);
+	ft_memcpy(res, &s[start], len);
 	res[len] = 0;
 	return (res);
 }
