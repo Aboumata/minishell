@@ -1,7 +1,8 @@
 CC = cc
 CFLAGS = -g -Wall -Wextra -Werror
 
-SRC = free_env.c minishell.c utils_env_V1.c utils_env_V2.c quick_sort.c\
+SRC = free_env.c minishell.c utils_env_V1.c utils_env_V2.c quick_sort.c path_utils.c\
+	  command_finder.c\
 	  parsing/utils_export.c parsing/mini_shell_split.c parsing/expander.c\
 	  parsing/expander_utils.c builtins/cd.c builtins/pwd.c builtins/echo.c builtins/env.c \
 	  builtins/exit.c builtins/export.c builtins/unset.c builtins/clear.c\
