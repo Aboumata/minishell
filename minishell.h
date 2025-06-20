@@ -23,7 +23,7 @@
 # include <unistd.h>
 # include <curses.h>
 # include <term.h>
-#include <assert.h>
+#include <wait.h>
 
 typedef struct s_envs
 {

@@ -11,9 +11,12 @@
 /* ************************************************************************** */
 
 #ifndef MINISHELL_EXEC_H
-#define MINISHELL_EXEC_H
+# define MINISHELL_EXEC_H
 
 void	free_path_directories(char **directories);
 char	**get_path_directories(void);
+char	*find_executable(char *command);
+char	**create_argv(char **tokens);
+int	    execute_command(const char *path, char **argv, char **envp);
 
 #endif
