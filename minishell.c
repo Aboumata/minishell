@@ -13,6 +13,7 @@
 
 #include "parsing/expander.h"
 #include "minishell.h"
+#include "minishell_exec.h"
 
 t_envs	*g_env = NULL;
 int		g_last_status = 0;
@@ -75,10 +76,6 @@ static void	handle_other_builtins(char *expanded)
 		g_last_status = builtin_echo(args);
 		free_split(args);
 	}
-	else if (is_builtin_match(expanded, "clear", 5))
-	{
-		builtin_clear();
-	}
 	else if (is_builtin_match(expanded, "exit", 4))
 	{
 		args = mini_shell_split(expanded);
@@ -91,7 +88,17 @@ static void	handle_other_builtins(char *expanded)
 		exit(exit_status);
 	}
 	else
-		g_last_status = 127;
+	{
+		args = mini_shell_split(expanded);
+		if (args && args[0])
+		{
+			extern char **environ;
+			g_last_status = handle_external_command(args, environ);
+		}
+		else
+			g_last_status = 127;
+		free_split(args);
+	}
 }
 
 static void	handle_input(char *input)

@@ -18,5 +18,6 @@ char	**get_path_directories(void);
 char	*find_executable(char *command);
 char	**create_argv(char **tokens);
 int	    execute_command(const char *path, char **argv, char **envp);
+int     handle_external_command(char **tokens, char **envp);
 
 #endif

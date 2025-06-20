@@ -5,7 +5,7 @@ SRC = free_env.c minishell.c utils_env_V1.c utils_env_V2.c quick_sort.c path_uti
 	  command_finder.c executor.c external_commands.c\
 	  parsing/utils_export.c parsing/mini_shell_split.c parsing/expander.c\
 	  parsing/expander_utils.c builtins/cd.c builtins/pwd.c builtins/echo.c builtins/env.c \
-	  builtins/exit.c builtins/export.c builtins/unset.c builtins/clear.c\
+	  builtins/exit.c builtins/export.c builtins/unset.c\
 
 OBJCS = ${SRC:.c=.o}
 
