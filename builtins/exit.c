@@ -12,7 +12,7 @@
 
 #include "../minishell.h"
 
-int builtin_exit(char **argv)
+int	builtin_exit(char **argv)
 {
 	long long	code;
 	char		*endptr;

@@ -2,6 +2,7 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
+/*                                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aboumata <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -12,17 +13,71 @@
 
 #include "../minishell.h"
 
-int	builtin_cd(char *path)
+static char	*get_current_directory(void)
 {
+	char	buffer[4096];
+
+	if (getcwd(buffer, sizeof(buffer)) != NULL)
+		return (ft_strdup(buffer));
+	return (NULL);
+}
+
+static void	update_pwd_variables(t_envs **env, char *old_pwd)
+{
+	char	*new_pwd;
+
+	if (old_pwd)
+	{
+		remove_env(env, "OLDPWD");
+		*env = add_env(*env, "OLDPWD", old_pwd);
+	}
+	new_pwd = get_current_directory();
+	if (new_pwd)
+	{
+		remove_env(env, "PWD");
+		*env = add_env(*env, "PWD", new_pwd);
+		free(new_pwd);
+	}
+}
+
+static char	*get_target_path(char *path)
+{
+	char	*home;
+
 	if (!path)
 	{
-		printf("cd: missing operand\n");
-		return (1);
+		home = getenv("HOME");
+		if (!home)
+		{
+			printf("cd: HOME not set\n");
+			return (NULL);
+		}
+		return (ft_strdup(home));
 	}
-	if (chdir(path) == -1)
+	return (ft_strdup(path));
+}
+
+int	builtin_cd(char *path)
+{
+	char	*target_path;
+	char	*old_pwd;
+
+	old_pwd = get_current_directory();
+	target_path = get_target_path(path);
+	if (!target_path)
 	{
-		printf("cd: %s: No such file or directory\n", path);
+		free(old_pwd);
 		return (1);
 	}
+	if (chdir(target_path) == -1)
+	{
+		printf("cd: %s: No such file or directory\n", target_path);
+		free(target_path);
+		free(old_pwd);
+		return (1);
+	}
+	update_pwd_variables(&g_env, old_pwd);
+	free(target_path);
+	free(old_pwd);
 	return (0);
 }
