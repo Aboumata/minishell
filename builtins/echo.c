@@ -19,7 +19,7 @@ int	builtin_echo(char **argv)
 
 	i = 1;
 	new_line = 1;
-	while (argv[i] && ft_strncmp(argv[i], "-n", 2) == 0)
+	while (argv[i] && safe_strcmp(argv[i], "-n"))
 	{
 		new_line = 0;
 		i++;
