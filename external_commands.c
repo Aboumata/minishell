@@ -15,7 +15,10 @@
 
 void cleanup_execution(char *path, char **argv)
 {
-
+    if (path)
+        free(path);
+    if (argv)
+        free(argv);
 }
 
 int handle_external_command(char **tokens, char **envp)
@@ -30,7 +33,7 @@ int handle_external_command(char **tokens, char **envp)
     path = find_executable(tokens[0]);
     if (!path)
     {
-        perror("command not found");
+        write(2, "minishell: command not found\n", 29);
         return (127);
     }
     argv = create_argv(tokens);
