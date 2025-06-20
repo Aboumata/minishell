@@ -120,8 +120,6 @@ int	builtin_export(t_envs **env, char *arg[])
 	int		i;
 	char	*trimmed_arg;
 	int		status;
-	char	*var_name;
-	int		name_len;
 
 	status = 0;
 	if (!arg[1])
@@ -139,22 +137,13 @@ int	builtin_export(t_envs **env, char *arg[])
 			i++;
 			continue ;
 		}
-		name_len = 0;
-		while (trimmed_arg[name_len] && trimmed_arg[name_len] != '='
-			&& !(trimmed_arg[name_len] == '+' && trimmed_arg[name_len
-				+ 1] == '='))
-			name_len++;
-		var_name = ft_substr(trimmed_arg, 0, name_len);
-		if (var_name[0] == '\0' || !is_valid(var_name))
+		if (!is_valid(trimmed_arg))
 		{
 			printf("minishell: export: `%s': not a valid identifier\n", arg[i]);
 			status = 1;
 		}
 		else
-		{
 			set_env_var(env, trimmed_arg);
-		}
-		free(var_name);
 		free(trimmed_arg);
 		i++;
 	}
