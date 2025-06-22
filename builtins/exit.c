@@ -91,6 +91,12 @@ int	builtin_exit(char **argv)
 		return (1);
 	}
 	code = ft_atoll(argv[1]);
+	if (code < 0 || code > 255)
+	{
+		printf("minishell: exit: %s: numeric argument required\n", argv[1]);
+		free_env(g_env);
+		exit(2);
+	}
 	free_env(g_env);
 	exit((unsigned char)code);
 }
