@@ -77,27 +77,27 @@ static int	ft_atoll_safe(const char *str, long long *result)
 	return (1);
 }
 
-int	builtin_exit(char **argv)
+int builtin_exit(char **argv)
 {
-	long long	code;
+	long long  code;
 
-	printf("exit\n");
-	if (!argv[1])
+	if (argv[1] && argv[2])
 	{
-		free_env(g_env);
-		exit(0);
-	}
-	if (!is_valid_number(argv[1]) || !ft_atoll_safe(argv[1], &code))
-	{
-		printf("minishell: exit: %s: numeric argument required\n", argv[1]);
-		free_env(g_env);
-		exit(2);
-	}
-	if (argv[2])
-	{
+		printf("exit\n");
 		printf("minishell: exit: too many arguments\n");
 		return (1);
 	}
+	printf("exit\n");
+	clear_history();
 	free_env(g_env);
+	g_env = NULL;
+
+	if (!argv[1])
+		exit(0);
+	if (!is_valid_number(argv[1]) || !ft_atoll_safe(argv[1], &code))
+	{
+		printf("minishell: exit: %s: numeric argument required\n", argv[1]);
+		exit(2);
+	}
 	exit((unsigned char)code);
 }

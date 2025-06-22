@@ -81,11 +81,7 @@ static void	handle_other_builtins(char *expanded)
 		args = mini_shell_split(expanded);
 		exit_status = builtin_exit(args);
 		free_split(args);
-		free(expanded);
-		clear_history();
-		free_env(g_env);
-		g_env = NULL;
-		exit(exit_status);
+		g_last_status = exit_status;
 	}
 	else
 	{
