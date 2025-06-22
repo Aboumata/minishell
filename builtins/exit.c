@@ -67,9 +67,9 @@ static int	ft_atoll_safe(const char *str, long long *result)
 	return (1);
 }
 
-int builtin_exit(char **argv)
+int	builtin_exit(char **argv)
 {
-	long long  code;
+	long long	code;
 
 	if (argv[1] && argv[2])
 	{
@@ -81,7 +81,6 @@ int builtin_exit(char **argv)
 	clear_history();
 	free_env(g_env);
 	g_env = NULL;
-
 	if (!argv[1])
 		exit(0);
 	if (!is_valid_number(argv[1]) || !ft_atoll_safe(argv[1], &code))
