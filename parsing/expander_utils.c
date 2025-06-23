@@ -66,7 +66,7 @@ int	replace_variable(t_exp_ctx *ctx)
 		len = end - start;
 		if (len <= 0 || len >= 127)
 			return (0);
-		memcpy(var, &(ctx->input[start]), len);
+		ft_memcpy(var, &(ctx->input[start]), len);
 		var[len] = '\0';
 		val = get_var_value(var, ctx->env, ctx->last_status);
 		write_value(val, ctx->out, ctx->j);
