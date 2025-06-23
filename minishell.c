@@ -11,12 +11,12 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parsing/expander.h"
 #include "minishell.h"
 #include "minishell_exec.h"
+#include "parsing/expander.h"
 
-t_envs	*g_env = NULL;
-int		g_last_status = 0;
+t_envs		*g_env = NULL;
+int			g_last_status = 0;
 
 void	handle_sigint(int sig)
 {
@@ -52,8 +52,9 @@ static void	handle_export_unset(char *input)
 
 static void	handle_other_builtins(char *expanded)
 {
-	char	**args;
-	int		exit_status;
+	char		**args;
+	int			exit_status;
+	extern char	**environ;
 
 	if (safe_strcmp(expanded, "env"))
 	{
@@ -88,7 +89,6 @@ static void	handle_other_builtins(char *expanded)
 		args = mini_shell_split(expanded);
 		if (args && args[0])
 		{
-			extern char **environ;
 			g_last_status = handle_external_command(args, environ);
 		}
 		else
@@ -101,7 +101,8 @@ static void	handle_input(char *input)
 {
 	char	*expanded;
 
-	if (is_builtin_match(input, "export", 6) || is_builtin_match(input, "unset", 5))
+	if (is_builtin_match(input, "export", 6) || is_builtin_match(input, "unset",
+			5))
 	{
 		handle_export_unset(input);
 		return ;

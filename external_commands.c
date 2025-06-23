@@ -13,35 +13,35 @@
 #include "minishell.h"
 #include "minishell_exec.h"
 
-void cleanup_execution(char *path, char **argv)
+void	cleanup_execution(char *path, char **argv)
 {
-    if (path)
-        free(path);
-    if (argv)
-        free(argv);
+	if (path)
+		free(path);
+	if (argv)
+		free(argv);
 }
 
-int handle_external_command(char **tokens, char **envp)
+int	handle_external_command(char **tokens, char **envp)
 {
-    char *path;
-    char **argv;
-    int status;
+	char	*path;
+	char	**argv;
+	int		status;
 
-    if (!tokens || !tokens[0])
-        return (-1);
-
-    path = find_executable(tokens[0]);
-    if (!path)
-    {
-        write(2, "minishell: command not found\n", 29);
-        return (127);
-    }
-    argv = create_argv(tokens);
-    if (!argv) {
-        free(path);
-        return (-1);
-    }
-    status = execute_command(path, argv, envp);
-    cleanup_execution(path, argv);
-    return (status);
+	if (!tokens || !tokens[0])
+		return (-1);
+	path = find_executable(tokens[0]);
+	if (!path)
+	{
+		write(2, "minishell: command not found\n", 29);
+		return (127);
+	}
+	argv = create_argv(tokens);
+	if (!argv)
+	{
+		free(path);
+		return (-1);
+	}
+	status = execute_command(path, argv, envp);
+	cleanup_execution(path, argv);
+	return (status);
 }
