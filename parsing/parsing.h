@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   expander.h                                         :+:      :+:    :+:   */
+/*   parsing.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aboumata <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef EXPANDER_H
-# define EXPANDER_H
+#ifndef PARSING_H
+# define PARSING_H
 
 # include "../minishell.h"
 
@@ -34,5 +34,8 @@ int				is_var_char(char c, int first);
 int				write_value(const char *val, char *out, int *j);
 char			*expand_variables(const char *input, t_envs *env,
 					int last_status);
+bool			is_whitespace(char c);
+int				is_special(const char *s, int i);
+void			skip_spaces(const char *s, int *i);
 
 #endif

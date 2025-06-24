@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   mini_shell_split.c                                 :+:      :+:    :+:   */
+/*   mini_shell_split_1.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aboumata <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -11,30 +11,7 @@
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-static bool	is_whitespace(char c)
-{
-	return (c == ' ' || c == '\t');
-}
-
-static int	is_special(const char *s, int i)
-{
-	if (s[i] == '|')
-		return (1);
-	if (s[i] == '<' && s[i + 1] == '<')
-		return (2);
-	if (s[i] == '>' && s[i + 1] == '>')
-		return (2);
-	if (s[i] == '<' || s[i] == '>')
-		return (1);
-	return (0);
-}
-
-static void	skip_spaces(const char *s, int *i)
-{
-	while (s[*i] && is_whitespace(s[*i]))
-		(*i)++;
-}
+#include "parsing.h"
 
 static char	*extract_token(const char *s, int *i)
 {
@@ -124,7 +101,7 @@ char	**mini_shell_split(const char *s)
 	char	**out;
 	char	*tok;
 
-	int (num), i, k;
+	int(num), i, k;
 	num = count_args(s);
 	out = malloc((num + 1) * sizeof(char *));
 	if (!out)
