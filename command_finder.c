@@ -49,7 +49,7 @@ char	*find_executable(char *command)
 	char	*full_path;
 	int		i;
 
-	if (command[0] == '/')
+	if (command[0] == '/' || command[0] == '.')
 	{
 		if (is_executable(command))
 			return (ft_strdup(command));
