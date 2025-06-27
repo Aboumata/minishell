@@ -15,7 +15,7 @@
 int	builtin_echo(char **argv)
 {
 	int	i;
-	int j;
+	int	j;
 	int	new_line;
 
 	i = 1;
@@ -26,7 +26,7 @@ int	builtin_echo(char **argv)
 		while (argv[i][j] == 'n')
 			j++;
 		if (argv[i][j] != '\0')
-			break;
+			break ;
 		new_line = 0;
 		i++;
 	}
