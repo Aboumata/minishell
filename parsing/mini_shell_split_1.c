@@ -10,7 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
 #include "parsing.h"
 
 static char	*extract_token(const char *s, int *i)

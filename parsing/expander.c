@@ -10,7 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
 #include "parsing.h"
 
 char	*get_var_value(const char *var, t_envs *env, int last_status)
