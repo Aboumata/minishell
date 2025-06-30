@@ -79,7 +79,6 @@ static int	count_args(const char *s)
 {
 	int		i;
 	char	*tok;
-	int		save_i;
 	int		count;
 
 	i = 0;
@@ -87,7 +86,6 @@ static int	count_args(const char *s)
 	count = 0;
 	while (1)
 	{
-		save_i = i;
 		tok = extract_token(s, &i);
 		if (!tok)
 			break ;
