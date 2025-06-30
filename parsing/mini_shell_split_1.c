@@ -18,12 +18,13 @@ static char	*extract_token(const char *s, int *i)
 	int		special_len;
 	char	*res;
 
-	int start, len;
+	int (start), (len);
 	quote = 0;
 	skip_spaces(s, i);
 	if (!s[*i])
 		return (NULL);
-	if ((special_len = is_special(s, *i)))
+	special_len = is_special(s, *i);
+	if (special_len)
 	{
 		res = malloc(special_len + 1);
 		if (!res)
@@ -82,7 +83,8 @@ static int	count_args(const char *s)
 	int		count;
 
 	i = 0;
-	i = 0, count = 0;
+	i = 0;
+	count = 0;
 	while (1)
 	{
 		save_i = i;
@@ -100,7 +102,7 @@ char	**mini_shell_split(const char *s)
 	char	**out;
 	char	*tok;
 
-	int(num), i, k;
+	int (num), (i), (k);
 	num = count_args(s);
 	out = malloc((num + 1) * sizeof(char *));
 	if (!out)
