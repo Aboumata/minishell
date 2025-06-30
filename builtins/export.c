@@ -45,14 +45,12 @@ static void	set_append_env_var(t_envs **env, const char *arg, char *plus_equal)
 {
 	t_envs	*node;
 	char	*name;
-	char	*value_raw;
 	char	*value;
 	char	*old;
 	char	*new_val;
 
 	name = ft_substr(arg, 0, plus_equal - arg);
-	value_raw = plus_equal + 2;
-	value = strip_quotes(value_raw);
+	value = strip_quotes(plus_equal + 2);
 	node = get_env(*env, name);
 	if (node)
 	{
