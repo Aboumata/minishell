@@ -37,5 +37,7 @@ char			*expand_variables(const char *input, t_envs *env,
 bool			is_whitespace(char c);
 int				is_special(const char *s, int i);
 void			skip_spaces(const char *s, int *i);
+char			*extract_special_token(const char *s, int *i);
+char			*extract_quoted_token(const char *s, int *i);
 
 #endif
