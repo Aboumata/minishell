@@ -35,4 +35,3 @@ void	skip_spaces(const char *s, int *i)
 	while (s[*i] && is_whitespace(s[*i]))
 		(*i)++;
 }
-
