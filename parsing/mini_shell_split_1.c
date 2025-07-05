@@ -2,7 +2,6 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   mini_shell_split_1.c                               :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
 /*   By: aboumata <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 16:40:39 by aboumata          #+#    #+#             */
@@ -12,14 +11,31 @@
 
 #include "parsing.h"
 
+static int	get_token_len(const char *s, int start)
+{
+	int		i;
+	char	quote;
+
+	i = start;
+	quote = 0;
+	while (s[i] && (quote || (!is_whitespace(s[i]) && !is_special(s, i))))
+	{
+		if (!quote && (s[i] == '\'' || s[i] == '"'))
+			quote = s[i];
+		else if (quote && s[i] == quote)
+			quote = 0;
+		i++;
+	}
+	return (i - start);
+}
+
 static char	*extract_token(const char *s, int *i)
 {
-	char	quote;
 	int		special_len;
 	char	*res;
+	int		start;
+	int		len;
 
-	int start, len;
-	quote = 0;
 	skip_spaces(s, i);
 	if (!s[*i])
 		return (NULL);
@@ -33,44 +49,14 @@ static char	*extract_token(const char *s, int *i)
 		*i += special_len;
 		return (res);
 	}
-	if (s[*i] == '\'' || s[*i] == '"')
-	{
-		quote = s[(*i)++];
-		start = *i;
-		while (s[*i] && s[*i] != quote)
-			(*i)++;
-		len = *i - start;
-		res = malloc(len + 1);
-		if (!res)
-			return (NULL);
-		ft_memcpy(res, &s[start], len);
-		res[len] = 0;
-		if (s[*i] == quote)
-			(*i)++;
-		return (res);
-	}
 	start = *i;
-	while (s[*i] && !is_whitespace(s[*i]) && !is_special(s, *i))
-	{
-		if (s[*i] == '\'' || s[*i] == '"')
-		{
-			quote = s[(*i)++];
-			while (s[*i] && s[*i] != quote)
-				(*i)++;
-			if (s[*i] == quote)
-				(*i)++;
-		}
-		else
-		{
-			(*i)++;
-		}
-	}
-	len = *i - start;
+	len = get_token_len(s, start);
 	res = malloc(len + 1);
 	if (!res)
 		return (NULL);
 	ft_memcpy(res, &s[start], len);
 	res[len] = 0;
+	*i += len;
 	return (res);
 }
 
@@ -78,14 +64,12 @@ static int	count_args(const char *s)
 {
 	int		i;
 	char	*tok;
-	int		save_i;
 	int		count;
 
 	i = 0;
-	i = 0, count = 0;
+	count = 0;
 	while (1)
 	{
-		save_i = i;
 		tok = extract_token(s, &i);
 		if (!tok)
 			break ;
@@ -99,8 +83,10 @@ char	**mini_shell_split(const char *s)
 {
 	char	**out;
 	char	*tok;
+	int		num;
+	int		i;
+	int		k;
 
-	int(num), i, k;
 	num = count_args(s);
 	out = malloc((num + 1) * sizeof(char *));
 	if (!out)
