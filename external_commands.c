@@ -32,7 +32,7 @@ int	handle_external_command(char **tokens, char **envp)
 	path = find_executable(tokens[0]);
 	if (!path)
 	{
-		write(2, "minishell: command not found\n", 29);
+		printf("%s: command not found\n", tokens[0]);
 		return (127);
 	}
 	argv = create_argv(tokens);
