@@ -22,7 +22,7 @@ int	builtin_echo(char **argv)
 	while (argv[i] && argv[i][0] == '-' && argv[i][1] == 'n')
 	{
 		j = 2;
-		while (argv[i][j] == 'n')
+		while (argv[i][j] == 'n' || argv[i][j] == 'E' || argv[i][j] == 'e')
 			j++;
 		if (argv[i][j] != '\0')
 			break ;
