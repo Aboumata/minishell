@@ -121,9 +121,7 @@ static void	set_prompt(char *prompt, char *cwd, char *home)
 			ft_strlcat(prompt, cwd + ft_strlen(home), 4120);
 		}
 		else
-		{
 			ft_strlcat(prompt, cwd, 4120);
-		}
 	}
 	ft_strlcat(prompt, "$ ", 4120);
 }
