@@ -88,9 +88,7 @@ static void	handle_other_builtins(char *expanded)
 	{
 		args = mini_shell_split(expanded);
 		if (args && args[0])
-		{
 			g_last_status = handle_external_command(args, environ);
-		}
 		else
 			g_last_status = 127;
 		free_split(args);
