@@ -12,6 +12,9 @@
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include "../parsing/parsing.h"
+
+extern int g_last_status;
 
 bool	is_valid(const char *str)
 {
@@ -41,6 +44,21 @@ bool	is_valid(const char *str)
 	return (true);
 }
 
+static char	*expand_and_strip(const char *value_raw)
+{
+	char	*expanded;
+	char	*result;
+
+	expanded = expand_variables(value_raw, g_env, g_last_status);
+	if (!expanded)
+		return (ft_strdup(""));
+	result = strip_quotes(expanded);
+	free(expanded);
+	if (!result)
+		return (ft_strdup(""));
+	return (result);
+}
+
 static void	set_append_env_var(t_envs **env, const char *arg, char *plus_equal)
 {
 	t_envs	*node;
@@ -50,7 +68,7 @@ static void	set_append_env_var(t_envs **env, const char *arg, char *plus_equal)
 	char	*new_val;
 
 	name = ft_substr(arg, 0, plus_equal - arg);
-	value = strip_quotes(plus_equal + 2);
+	value = expand_and_strip(plus_equal + 2);
 	node = get_env(*env, name);
 	if (node)
 	{
@@ -72,12 +90,10 @@ static void	set_equal_env_var(t_envs **env, const char *arg, char *equal)
 {
 	t_envs	*node;
 	char	*name;
-	char	*value_raw;
 	char	*value;
 
 	name = ft_substr(arg, 0, equal - arg);
-	value_raw = equal + 1;
-	value = strip_quotes(value_raw);
+	value = expand_and_strip(equal + 1);
 	node = get_env(*env, name);
 	if (node)
 	{
