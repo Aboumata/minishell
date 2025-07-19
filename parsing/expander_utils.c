@@ -17,6 +17,7 @@ int	expand_question(t_exp_ctx *ctx)
 	char	*val;
 
 	val = get_var_value("?", ctx->env, ctx->last_status);
+	write_value(val, ctx->out, ctx->j);
 	free(val);
 	return (1);
 }
