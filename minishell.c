@@ -64,7 +64,7 @@ static void	handle_other_builtins(char *expanded)
 	else if (is_builtin_match(expanded, "cd", 2))
 	{
 		args = mini_shell_split(expanded);
-		g_last_status = builtin_cd(args[1]);
+		g_last_status = builtin_cd(args);
 		free_split(args);
 	}
 	else if (is_builtin_match(expanded, "pwd", 3))

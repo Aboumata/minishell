@@ -51,7 +51,7 @@ t_envs				*add_env(t_envs *env, const char *names,
 void				free_split(char **result);
 char				**mini_shell_split(const char *str);
 int					builtin_export(t_envs **env, char *arg[]);
-int					builtin_cd(char *path);
+int					builtin_cd(char **args);
 int					builtin_pwd(void);
 int					builtin_echo(char **argv);
 int					builtin_exit(char **argv);

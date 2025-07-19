@@ -2,7 +2,7 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
-/*                                                      :+:      :+:    :+:   */
+/*                                                      +:+      +:+     :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aboumata <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -57,13 +57,29 @@ static char	*get_target_path(char *path)
 	return (ft_strdup(path));
 }
 
-int	builtin_cd(char *path)
+static int	check_cd_args(char **args)
+{
+	int	count = 0;
+
+	while (args[count])
+		count++;
+	if (count > 2)
+	{
+		printf("minishell: cd: too many arguments\n");
+		return (1);
+	}
+	return (0);
+}
+
+int	builtin_cd(char **args)
 {
 	char	*target_path;
 	char	*old_pwd;
 
+	if (check_cd_args(args))
+		return (1);
 	old_pwd = get_current_directory();
-	target_path = get_target_path(path);
+	target_path = get_target_path(args[1]);
 	if (!target_path)
 	{
 		free(old_pwd);
@@ -71,7 +87,7 @@ int	builtin_cd(char *path)
 	}
 	if (chdir(target_path) == -1)
 	{
-		printf("cd: %s: No such file or directory\n", target_path);
+		printf("minishell: cd: %s: No such file or directory\n", target_path);
 		free(target_path);
 		free(old_pwd);
 		return (1);
