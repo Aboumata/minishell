@@ -14,11 +14,11 @@
 
 static void	handle_single_quotes(const char *input, int *i, char *out, int *j)
 {
-	(*i)++;
+	out[(*j)++] = input[(*i)++];
 	while (input[*i] && input[*i] != '\'' && *j < 4095)
 		out[(*j)++] = input[(*i)++];
 	if (input[*i] == '\'')
-		(*i)++;
+		out[(*j)++] = input[(*i)++];
 }
 
 static void	handle_double_quotes(const char *input, int *i, char *out, int *j,
@@ -26,7 +26,7 @@ static void	handle_double_quotes(const char *input, int *i, char *out, int *j,
 {
 	t_exp_ctx	ctx;
 
-	(*i)++;
+	out[(*j)++] = input[(*i)++];
 	ctx.input = input;
 	ctx.env = env;
 	ctx.last_status = last_status;
@@ -41,7 +41,7 @@ static void	handle_double_quotes(const char *input, int *i, char *out, int *j,
 			out[(*j)++] = input[(*i)++];
 	}
 	if (input[*i] == '"')
-		(*i)++;
+		out[(*j)++] = input[(*i)++];
 }
 
 static void	handle_unquoted(const char *input, int *i, char *out, int *j,

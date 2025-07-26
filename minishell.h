@@ -34,6 +34,7 @@ typedef struct s_envs
 }					t_envs;
 
 extern t_envs		*g_env;
+extern int g_last_status;
 
 void				free_env(t_envs *env);
 bool				safe_strcmp(const char *s1, const char *s2);
@@ -59,5 +60,8 @@ int					builtin_unset(char **argv, t_envs **env);
 char				*strip_quotes(const char *value);
 t_envs				*copy_env_node(t_envs *node);
 t_envs				*copy_env_list(t_envs *env);
+int					is_builtin_match(const char *input, const char *cmd, int len);
+void				handle_input_with_pipes(char *input, char **environ);
+void				handle_export_unset(char *input);
 
 #endif

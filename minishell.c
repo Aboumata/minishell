@@ -14,6 +14,7 @@
 #include "minishell.h"
 #include "minishell_exec.h"
 #include "parsing/parsing.h"
+#include "pipe_structures.h"
 
 t_envs		*g_env = NULL;
 int			g_last_status = 0;
@@ -32,13 +33,13 @@ void	handle_sigquit(int sig)
 	(void)sig;
 }
 
-static int	is_builtin_match(const char *input, const char *cmd, int len)
+int	is_builtin_match(const char *input, const char *cmd, int len)
 {
 	return (ft_strncmp(input, cmd, len) == 0 && (input[len] == '\0'
 			|| input[len] == ' '));
 }
 
-static void	handle_export_unset(char *input)
+void	handle_export_unset(char *input)
 {
 	char	**args;
 
@@ -50,64 +51,11 @@ static void	handle_export_unset(char *input)
 	free_split(args);
 }
 
-static void	handle_other_builtins(char *expanded)
-{
-	char		**args;
-	int			exit_status;
-	extern char	**environ;
-
-	if (safe_strcmp(expanded, "env"))
-	{
-		print_env(g_env);
-		g_last_status = 0;
-	}
-	else if (is_builtin_match(expanded, "cd", 2))
-	{
-		args = mini_shell_split(expanded);
-		g_last_status = builtin_cd(args);
-		free_split(args);
-	}
-	else if (is_builtin_match(expanded, "pwd", 3))
-	{
-		g_last_status = builtin_pwd();
-	}
-	else if (is_builtin_match(expanded, "echo", 4))
-	{
-		args = mini_shell_split(expanded);
-		g_last_status = builtin_echo(args);
-		free_split(args);
-	}
-	else if (is_builtin_match(expanded, "exit", 4))
-	{
-		args = mini_shell_split(expanded);
-		exit_status = builtin_exit(args);
-		free_split(args);
-		g_last_status = exit_status;
-	}
-	else
-	{
-		args = mini_shell_split(expanded);
-		if (args && args[0])
-			g_last_status = handle_external_command(args, environ);
-		else
-			g_last_status = 127;
-		free_split(args);
-	}
-}
-
 static void	handle_input(char *input)
 {
-	char	*expanded;
+	extern char	**environ;
 
-	if (is_builtin_match(input, "export", 6) || is_builtin_match(input, "unset",
-			5))
-	{
-		handle_export_unset(input);
-		return ;
-	}
-	expanded = expand_variables(input, g_env, g_last_status);
-	handle_other_builtins(expanded);
-	free(expanded);
+	handle_input_with_pipes(input, environ);
 }
 
 static void	set_prompt(char *prompt, char *cwd, char *home)
@@ -126,6 +74,32 @@ static void	set_prompt(char *prompt, char *cwd, char *home)
 	ft_strlcat(prompt, "$ ", 4120);
 }
 
+static void	setup_signals(void)
+{
+	signal(SIGINT, handle_sigint);
+	signal(SIGQUIT, handle_sigquit);
+}
+
+static int	process_input(char *input)
+{
+	if (!input)
+		return (0);
+	if (*input)
+	{
+		add_history(input);
+		handle_input(input);
+	}
+	free(input);
+	return (1);
+}
+
+static void	cleanup_and_exit(void)
+{
+	clear_history();
+	free_env(g_env);
+	g_env = NULL;
+}
+
 int	main(const int argc, char **argv, char *envp[])
 {
 	char	*input;
@@ -136,24 +110,15 @@ int	main(const int argc, char **argv, char *envp[])
 	(void)argc;
 	(void)argv;
 	g_env = init_env(envp);
-	signal(SIGINT, handle_sigint);
-	signal(SIGQUIT, handle_sigquit);
+	setup_signals();
 	while (1)
 	{
 		home = getenv("HOME");
 		set_prompt(prompt, cwd, home);
 		input = readline(prompt);
-		if (!input)
+		if (!process_input(input))
 			break ;
-		if (*input)
-		{
-			add_history(input);
-			handle_input(input);
-		}
-		free(input);
 	}
-	clear_history();
-	free_env(g_env);
-	g_env = NULL;
+	cleanup_and_exit();
 	return (0);
 }

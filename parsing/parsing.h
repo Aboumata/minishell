@@ -2,6 +2,7 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   parsing.h                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
 /*   By: aboumata <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 17:55:14 by aboumata          #+#    #+#             */
@@ -33,6 +34,7 @@ int				is_var_char(char c, int first);
 int				write_value(const char *val, char *out, int *j);
 char			*expand_variables(const char *input, t_envs *env,
 					int last_status);
+char			**mini_shell_split(const char *s);
 void			process_dollar(t_exp_ctx *ctx);
 void			copy_literal_content(const char *input, int *i, char *out,
 					int *j, char quote_char);
@@ -47,5 +49,17 @@ void			process_expansion_char(const char *input, int *i, char *out,
 bool			is_whitespace(char c);
 int				is_special(const char *s, int i);
 void			skip_spaces(const char *s, int *i);
+char			**expand_tokens(char **tokens, t_envs *env, int last_status);
+void			free_tokens(char **tokens);
+char			**parse_command_line(const char *input, t_envs *env, int last_status);
+
+/* token_processor helper functions */
+int				count_tokens(char **tokens);
+char			**allocate_token_array(int count);
+void			cleanup_expanded_tokens(char **expanded_tokens, int index);
+char			*process_regular_token(char *token, t_envs *env, int last_status);
+char			*process_single_token(char *token, t_envs *env, int last_status);
+int				validate_input_parameters(const char *input, t_envs *env);
+char			**handle_tokenization_error(void);
 
 #endif

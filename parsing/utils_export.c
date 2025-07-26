@@ -72,9 +72,16 @@ char	*strip_quotes(const char *value)
 {
 	size_t	len;
 
+	if (!value)
+		return (NULL);
+
 	len = ft_strlen(value);
-	if ((len >= 2) && ((value[0] == '\'' && value[len - 1] == '\'')
-			|| (value[0] == '"' && value[len - 1] == '"')))
-		return (ft_substr(value, 1, len - 2));
+	if (len >= 2)
+	{
+		if (value[0] == '\'' && value[len - 1] == '\'')
+			return (ft_substr(value, 1, len - 2));
+		if (value[0] == '"' && value[len - 1] == '"')
+			return (ft_substr(value, 1, len - 2));
+	}
 	return (ft_strdup(value));
 }
