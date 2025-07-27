@@ -39,7 +39,7 @@ void		free_pipeline(t_pipeline *pipeline);
 t_pipeline	*parse_pipeline(char **tokens);
 int			contains_pipe(char **tokens);
 int			validate_pipe_syntax(char **tokens);
-void		print_syntax_error(const char *token);
+void		print_syntax_error(char *token);
 int			check_pipe_position(char **tokens, int i);
 
 /* pipe_executor_utils.c */

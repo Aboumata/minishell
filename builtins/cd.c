@@ -65,7 +65,7 @@ static int	check_cd_args(char **args)
 		count++;
 	if (count > 2)
 	{
-		printf("minishell: cd: too many arguments\n");
+		ft_putstr_fd("minishell: cd: too many arguments\n", 2);
 		return (1);
 	}
 	return (0);
@@ -87,7 +87,9 @@ int	builtin_cd(char **args)
 	}
 	if (chdir(target_path) == -1)
 	{
-		printf("minishell: cd: %s: No such file or directory\n", target_path);
+		ft_putstr_fd("minishell: cd: ", 2);
+		ft_putstr_fd(target_path, 2);
+		ft_putstr_fd(": No such file or directory\n", 2);
 		free(target_path);
 		free(old_pwd);
 		return (1);

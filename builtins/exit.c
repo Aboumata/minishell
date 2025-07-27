@@ -74,7 +74,7 @@ int	builtin_exit(char **argv)
 	if (argv[1] && argv[2])
 	{
 		printf("exit\n");
-		printf("minishell: exit: too many arguments\n");
+		ft_putstr_fd("minishell: exit: too many arguments\n", 2);
 		return (1);
 	}
 	printf("exit\n");
@@ -85,7 +85,9 @@ int	builtin_exit(char **argv)
 		exit(0);
 	if (!is_valid_number(argv[1]) || !ft_atoll_safe(argv[1], &code))
 	{
-		printf("minishell: exit: %s: numeric argument required\n", argv[1]);
+		ft_putstr_fd("minishell: exit: ", 2);
+		ft_putstr_fd(argv[1], 2);
+		ft_putstr_fd(": numeric argument required\n", 2);
 		exit(2);
 	}
 	exit((unsigned char)code);

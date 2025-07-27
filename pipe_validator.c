@@ -13,9 +13,11 @@
 #include "minishell.h"
 #include "pipe_structures.h"
 
-void	print_syntax_error(const char *token)
+void	print_syntax_error(char *token)
 {
-	printf("minishell: syntax error near unexpected token `%s'\n", token);
+	ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
+	ft_putstr_fd(token, 2);
+	ft_putstr_fd("'\n", 2);
 }
 
 int	check_pipe_at_start(char **tokens)

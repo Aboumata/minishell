@@ -153,7 +153,9 @@ int	builtin_export(t_envs **env, char *arg[])
 		}
 		if (!is_valid(trimmed_arg))
 		{
-			printf("minishell: export: `%s': not a valid identifier\n", arg[i]);
+			ft_putstr_fd("minishell: export: `", 2);
+			ft_putstr_fd(trimmed_arg, 2);
+			ft_putstr_fd("': not a valid identifier\n", 2);
 			status = 1;
 		}
 		else

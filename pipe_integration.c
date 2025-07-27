@@ -43,9 +43,9 @@ static int	handle_single_env_command(char **args)
 	{
 		print_env(g_env);
 		g_last_status = 0;
-		return (1);  // Command was handled
+		return (1);
 	}
-	return (0);  // Command was not handled
+	return (0);
 }
 
 static int	handle_single_builtin(char **args)
@@ -68,6 +68,16 @@ static int	handle_single_builtin(char **args)
 		g_last_status = builtin_echo(args);
 		return (1);
 	}
+	else if (safe_strcmp(args[0], "export"))
+	{
+		g_last_status = builtin_export(&g_env, args);
+		return (1);
+	}
+	else if (safe_strcmp(args[0], "unset"))
+	{
+		g_last_status = builtin_unset(args, &g_env);
+		return (1);
+	}
 	else if (safe_strcmp(args[0], "exit"))
 	{
 		int exit_status = builtin_exit(args);
@@ -86,18 +96,35 @@ static void	handle_single_command(char **args, char **environ)
 	g_last_status = handle_external_command(args, environ);
 }
 
+static int	contains_pipe_in_input(const char *input)
+{
+	int		i;
+	char	quote;
+
+	i = 0;
+	quote = 0;
+	while (input[i])
+	{
+		if (!quote && (input[i] == '\'' || input[i] == '"'))
+			quote = input[i];
+		else if (quote && input[i] == quote)
+			quote = 0;
+		else if (!quote && input[i] == '|')
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
 void	handle_input_with_pipes(char *input, char **environ)
 {
 	char	**args;
 
-	// Handle export/unset specially since they affect the global environment
-	if (is_builtin_match(input, "export", 6) || is_builtin_match(input, "unset", 5))
+	if (!contains_pipe_in_input(input) && (is_builtin_match(input, "export", 6) || is_builtin_match(input, "unset", 5)))
 	{
 		handle_export_unset(input);
 		return ;
 	}
-
-	// Parse the command line with proper expansion and quote stripping
 	args = parse_command_line(input, g_env, g_last_status);
 	if (!args || !args[0])
 	{
@@ -106,11 +133,9 @@ void	handle_input_with_pipes(char *input, char **environ)
 			free_tokens(args);
 		return ;
 	}
-
 	if (contains_pipe(args))
 		handle_pipeline_execution(args, environ);
 	else
 		handle_single_command(args, environ);
-
 	free_tokens(args);
 }
