@@ -70,18 +70,37 @@ t_envs	*add_env(t_envs *env, const char *names, const char *values)
 
 char	*strip_quotes(const char *value)
 {
-	size_t	len;
+	char	*result;
+	int		i;
+	int		j;
+	int		len;
+	char	quote;
 
 	if (!value)
 		return (NULL);
 
 	len = ft_strlen(value);
-	if (len >= 2)
+	result = malloc(len + 1);
+	if (!result)
+		return (NULL);
+	i = 0;
+	j = 0;
+	quote = 0;
+	while (i < len)
 	{
-		if (value[0] == '\'' && value[len - 1] == '\'')
-			return (ft_substr(value, 1, len - 2));
-		if (value[0] == '"' && value[len - 1] == '"')
-			return (ft_substr(value, 1, len - 2));
+		if (!quote && (value[i] == '\'' || value[i] == '"'))
+		{
+			quote = value[i];
+			i++;
+		}
+		else if (quote && value[i] == quote)
+		{
+			quote = 0;
+			i++;
+		}
+		else
+			result[j++] = value[i++];
 	}
-	return (ft_strdup(value));
+	result[j] = '\0';
+	return (result);
 }

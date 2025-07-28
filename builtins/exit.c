@@ -23,7 +23,7 @@ static int	is_valid_number(const char *str)
 		i++;
 	if (str[i] == '+' || str[i] == '-')
 		i++;
-	if (!ft_isdigit(str[i]))
+	if (!str[i] || !ft_isdigit(str[i]))
 		return (0);
 	while (str[i])
 	{
