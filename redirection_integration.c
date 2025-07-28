@@ -12,26 +12,9 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-# include "pipe_structures.h"
+#include "pipe_structures.h"
 #include "redirection_structures.h"
 #include "minishell_exec.h"
-
-static void	write_str(int fd, const char *str)
-{
-	int	len;
-
-	len = 0;
-	while (str[len])
-		len++;
-	write(fd, str, len);
-}
-
-static void	write_command_not_found(const char *cmd)
-{
-	write_str(STDERR_FILENO, "minishell: ");
-	write_str(STDERR_FILENO, cmd);
-	write_str(STDERR_FILENO, ": command not found\n");
-}
 
 static t_cmd_with_redir	*create_cmd_with_redir(char **args)
 {
@@ -95,7 +78,6 @@ static int	exec_cmd_with_redirections(t_cmd_with_redir *cmd, char **envp)
 	path = find_executable(cmd->args[0]);
 	if (!path)
 	{
-		write_command_not_found(cmd->args[0]);
 		restore_stdio(saved_stdin, saved_stdout);
 		return (127);
 	}
@@ -109,7 +91,12 @@ static int	exec_cmd_with_redirections(t_cmd_with_redir *cmd, char **envp)
 	else if (pid > 0)
 	{
 		waitpid(pid, &status, 0);
-		status = WEXITSTATUS(status);
+		if (WIFEXITED(status))
+			status = WEXITSTATUS(status);
+		else if (WIFSIGNALED(status))
+			status = 128 + WTERMSIG(status);
+		else
+			status = 1;
 	}
 	else
 	{

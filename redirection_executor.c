@@ -1,3 +1,4 @@
+
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
@@ -93,7 +94,7 @@ int	setup_redirections(t_redirection *redirections)
 	while (current)
 	{
 		if (handle_single_redirection(current) == -1)
-			return (1);
+			return (-1);
 		current = current->next;
 	}
 	return (0);
@@ -138,7 +139,7 @@ int	execute_with_redirections(t_cmd_with_redir *cmd, char **envp)
 	if (setup_redirections(cmd->redirections) == -1)
 	{
 		restore_original_fds(saved_stdin, saved_stdout);
-		return (-1);
+		return (1);
 	}
 	if (cmd->is_builtin)
 		status = execute_builtin_redir(cmd);

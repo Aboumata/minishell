@@ -86,7 +86,6 @@ static void	execute_pipeline_child(t_command *cmd, int **pipes, int cmd_index,
 	path = find_executable(cmd->args[0]);
 	if (!path)
 	{
-		printf("minishell: %s: command not found\n", cmd->args[0]);
 		exit(127);
 	}
 	execve(path, cmd->args, envp);
