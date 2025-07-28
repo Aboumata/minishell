@@ -25,23 +25,54 @@ static t_pipeline	*init_pipeline(char **tokens)
 	return (pipeline);
 }
 
+
 static int	add_command_to_pipeline(t_pipeline *pipeline, char **args)
 {
-	t_command	*new_cmd;
+	t_command	*cmd;
 	t_command	*current;
+	char		**clean_args;
+	t_redirection *redirections = NULL;
 
-	new_cmd = create_command(args);
-	if (!new_cmd)
-		return (0);
+	// Check if this command has redirections
+	if (has_redirections(args))
+	{
+		// Parse redirections and get clean args
+		redirections = parse_redirections(args, &clean_args);
+		if (!clean_args)
+		{
+			free_redirection(redirections);
+			return (-1);
+		}
+		cmd = create_command(clean_args);
+		free_split(clean_args); // Don't forget to free clean_args
+	}
+	else
+	{
+		cmd = create_command(args);
+	}
+
+	if (!cmd)
+	{
+		free_redirection(redirections);
+		return (-1);
+	}
+
+	// Store redirections in the command structure
+	cmd->redirections = redirections;
+
+	// Add to end of pipeline
 	if (!pipeline->commands)
 	{
-		pipeline->commands = new_cmd;
-		return (1);
+		pipeline->commands = cmd;
 	}
-	current = pipeline->commands;
-	while (current->next)
-		current = current->next;
-	current->next = new_cmd;
+	else
+	{
+		current = pipeline->commands;
+		while (current->next)
+			current = current->next;
+		current->next = cmd;
+	}
+
 	return (1);
 }
 

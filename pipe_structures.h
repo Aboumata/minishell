@@ -14,13 +14,15 @@
 # define PIPE_STRUCTURES_H
 
 # include "minishell.h"
+# include "redirection_structures.h"
 
 typedef struct s_command
 {
 	char				**args;
 	int					is_builtin;
+	t_redirection		*redirections;  // Add this field
 	struct s_command	*next;
-}						t_command;
+}	t_command;
 
 typedef struct s_pipeline
 {

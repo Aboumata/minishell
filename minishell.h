@@ -6,7 +6,7 @@
 /*   By: aboumata <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 12:39:14 by aboumata          #+#    #+#             */
-/*   Updated: 2025/04/26 12:39:17 by aboumata         ###   ########.fr       */
+/*   Updated: 2025/07/28 14:00:00 by aboumata         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,5 +64,6 @@ t_envs				*copy_env_list(t_envs *env);
 int					is_builtin_match(const char *input, const char *cmd, int len);
 void				handle_input_with_pipes(char *input, char **environ);
 void				handle_export_unset(char *input);
+int					handle_input_with_redirections(char **tokens, char **envp);
 
 #endif

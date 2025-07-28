@@ -6,7 +6,7 @@
 /*   By: aboumata <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 14:00:00 by aboumata          #+#    #+#             */
-/*   Updated: 2025/07/26 14:00:00 by aboumata         ###   ########.fr       */
+/*   Updated: 2025/07/28 14:00:00 by aboumata         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # include "parsing/parsing.h"
 # include "minishell_exec.h"
 # include "pipe_structures.h"
+# include "redirection_structures.h"
 
 static int	handle_pipeline_execution(char **args, char **environ)
 {
@@ -91,9 +92,15 @@ static void	handle_single_command(char **args, char **environ)
 {
 	if (handle_single_env_command(args))
 		return;
+	if (has_redirections(args))
+	{
+		g_last_status = handle_input_with_redirections(args, environ);
+		return;
+	}
 	if (handle_single_builtin(args))
 		return;
-	g_last_status = handle_external_command(args, environ);
+
+	g_last_status = handle_input_with_redirections(args, environ);
 }
 
 static int	contains_pipe_in_input(const char *input)
