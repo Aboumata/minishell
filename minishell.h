@@ -25,6 +25,7 @@
 # include <term.h>
 # include <unistd.h>
 # include <wait.h>
+# include <fcntl.h>
 
 typedef struct s_envs
 {
