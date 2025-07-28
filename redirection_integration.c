@@ -1,3 +1,4 @@
+
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
@@ -14,6 +15,23 @@
 # include "pipe_structures.h"
 #include "redirection_structures.h"
 #include "minishell_exec.h"
+
+static void	write_str(int fd, const char *str)
+{
+	int	len;
+
+	len = 0;
+	while (str[len])
+		len++;
+	write(fd, str, len);
+}
+
+static void	write_command_not_found(const char *cmd)
+{
+	write_str(STDERR_FILENO, "minishell: ");
+	write_str(STDERR_FILENO, cmd);
+	write_str(STDERR_FILENO, ": command not found\n");
+}
 
 static t_cmd_with_redir	*create_cmd_with_redir(char **args)
 {
@@ -58,6 +76,7 @@ static int	exec_cmd_with_redirections(t_cmd_with_redir *cmd, char **envp)
 	int		saved_stdout;
 	int		status;
 	char	*path;
+	pid_t	pid;
 
 	saved_stdin = dup(STDIN_FILENO);
 	saved_stdout = dup(STDOUT_FILENO);
@@ -76,11 +95,11 @@ static int	exec_cmd_with_redirections(t_cmd_with_redir *cmd, char **envp)
 	path = find_executable(cmd->args[0]);
 	if (!path)
 	{
-		printf("minishell: %s: command not found\n", cmd->args[0]);
+		write_command_not_found(cmd->args[0]);
 		restore_stdio(saved_stdin, saved_stdout);
 		return (127);
 	}
-	pid_t pid = fork();
+	pid = fork();
 	if (pid == 0)
 	{
 		execve(path, cmd->args, envp);
