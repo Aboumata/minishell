@@ -73,17 +73,13 @@ static void	execute_pipeline_child(t_command *cmd, int **pipes, int cmd_index,
 {
 	char	*path;
 
-	// Setup pipes first
 	if (cmd_index > 0)
 		dup2(pipes[cmd_index - 1][0], STDIN_FILENO);
 	if (cmd_index < total_cmds - 1)
 		dup2(pipes[cmd_index][1], STDOUT_FILENO);
 	close_all_pipes(pipes, total_cmds - 1);
-
-	// CRITICAL: Handle redirections AFTER pipes but BEFORE execution
 	if (cmd->redirections && setup_redirections(cmd->redirections) == -1)
-		exit(1);  // Changed from exit(-1)
-
+		exit(1);
 	if (cmd->is_builtin)
 		exit(execute_builtin_in_pipe(cmd, STDIN_FILENO, STDOUT_FILENO));
 
@@ -95,7 +91,7 @@ static void	execute_pipeline_child(t_command *cmd, int **pipes, int cmd_index,
 	}
 	execve(path, cmd->args, envp);
 	perror("execve failed");
-	exit(1);  // Changed from EXIT_FAILURE
+	exit(1);
 }
 
 int	execute_pipeline(t_pipeline *pipeline, char **envp)

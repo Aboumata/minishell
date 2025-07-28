@@ -45,7 +45,6 @@ static void	free_split_partial(char **args, int count)
 	free(args);
 }
 
-// Simplify extract_command_args - just copy all tokens for now
 char	**extract_command_args(char **tokens, int *start, int end)
 {
 	char	**args;
@@ -72,7 +71,7 @@ char	**extract_command_args(char **tokens, int *start, int end)
 		i++;
 	}
 	args[j] = NULL;
-	*start = end + 1; // Skip the pipe token
+	*start = end + 1;
 	return (args);
 }
 
@@ -87,20 +86,15 @@ t_command	*create_command(char **args)
 	cmd = malloc(sizeof(t_command));
 	if (!cmd)
 		return (NULL);
-
-	// Count arguments
 	argc = 0;
 	while (args[argc])
 		argc++;
-
-	// Allocate and copy arguments
 	cmd->args = malloc(sizeof(char *) * (argc + 1));
 	if (!cmd->args)
 	{
 		free(cmd);
 		return (NULL);
 	}
-
 	i = 0;
 	while (i < argc)
 	{
@@ -118,7 +112,7 @@ t_command	*create_command(char **args)
 	cmd->args[argc] = NULL;
 
 	cmd->is_builtin = is_builtin_command(args[0]);
-	cmd->redirections = NULL; // Initialize redirections
+	cmd->redirections = NULL;
 	cmd->next = NULL;
 
 	return (cmd);

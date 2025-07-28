@@ -52,7 +52,6 @@ static int	execute_builtin_with_redir(t_cmd_with_redir *cmd)
 	return (127);
 }
 
-
 static int	exec_cmd_with_redirections(t_cmd_with_redir *cmd, char **envp)
 {
 	int		saved_stdin;
@@ -68,16 +67,12 @@ static int	exec_cmd_with_redirections(t_cmd_with_redir *cmd, char **envp)
 		restore_stdio(saved_stdin, saved_stdout);
 		return (1);
 	}
-
-	// Handle builtin commands with redirections
 	if (cmd->is_builtin)
 	{
 		status = execute_builtin_with_redir(cmd);
 		restore_stdio(saved_stdin, saved_stdout);
 		return (status);
 	}
-
-	// Handle external commands
 	path = find_executable(cmd->args[0]);
 	if (!path)
 	{
@@ -85,7 +80,6 @@ static int	exec_cmd_with_redirections(t_cmd_with_redir *cmd, char **envp)
 		restore_stdio(saved_stdin, saved_stdout);
 		return (127);
 	}
-
 	pid_t pid = fork();
 	if (pid == 0)
 	{
