@@ -20,7 +20,7 @@ typedef struct s_command
 {
 	char				**args;
 	int					is_builtin;
-	t_redirection		*redirections;  // Add this field
+	t_redirection		*redirections;
 	struct s_command	*next;
 }	t_command;
 
