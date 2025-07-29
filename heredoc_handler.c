@@ -10,8 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+
 #include "minishell.h"
 #include "redirection_structures.h"
+#include "parsing/parsing.h"
 
 char	*generate_temp_filename(void)
 {
@@ -40,6 +42,7 @@ char	*generate_temp_filename(void)
 int	write_heredoc_content(int fd, const char *delimiter)
 {
 	char	*line;
+	char	*expanded_line;
 
 	while (1)
 	{
@@ -51,7 +54,18 @@ int	write_heredoc_content(int fd, const char *delimiter)
 			free(line);
 			break ;
 		}
-		write(fd, line, ft_strlen(line));
+
+		// Expand variables in the line
+		expanded_line = expand_variables(line, g_env, g_last_status);
+		if (expanded_line)
+		{
+			write(fd, expanded_line, ft_strlen(expanded_line));
+			free(expanded_line);
+		}
+		else
+		{
+			write(fd, line, ft_strlen(line));
+		}
 		write(fd, "\n", 1);
 		free(line);
 	}

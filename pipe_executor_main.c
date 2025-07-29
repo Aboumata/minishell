@@ -1,3 +1,4 @@
+
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
@@ -68,6 +69,51 @@ static void	close_all_pipes(int **pipes, int count)
 	}
 }
 
+static int setup_redirections_child(t_redirection *redirections)
+{
+	t_redirection *current = redirections;
+	int fd;
+	
+	while (current)
+	{
+		if (current->type == REDIR_IN)
+		{
+			fd = open(current->file, O_RDONLY);
+			if (fd == -1)
+				return (perror(current->file), -1);
+			dup2(fd, STDIN_FILENO);
+			close(fd);
+		}
+		else if (current->type == REDIR_OUT)
+		{
+			fd = open(current->file, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+			if (fd == -1)
+				return (perror(current->file), -1);
+			dup2(fd, STDOUT_FILENO);
+			close(fd);
+		}
+		else if (current->type == REDIR_APPEND)
+		{
+			fd = open(current->file, O_CREAT | O_WRONLY | O_APPEND, 0644);
+			if (fd == -1)
+				return (perror(current->file), -1);
+			dup2(fd, STDOUT_FILENO);
+			close(fd);
+		}
+		else if (current->type == REDIR_HEREDOC)
+		{
+			// Heredoc FD should already be prepared in parent process
+			if (current->heredoc_fd != -1)
+			{
+				dup2(current->heredoc_fd, STDIN_FILENO);
+				close(current->heredoc_fd);
+			}
+		}
+		current = current->next;
+	}
+	return (0);
+}
+
 static void	execute_pipeline_child(t_command *cmd, int **pipes, int cmd_index,
 		int total_cmds, char **envp)
 {
@@ -78,7 +124,7 @@ static void	execute_pipeline_child(t_command *cmd, int **pipes, int cmd_index,
 	if (cmd_index < total_cmds - 1)
 		dup2(pipes[cmd_index][1], STDOUT_FILENO);
 	close_all_pipes(pipes, total_cmds - 1);
-	if (cmd->redirections && setup_redirections(cmd->redirections) == -1)
+	if (cmd->redirections && setup_redirections_child(cmd->redirections) == -1)
 		exit(1);
 	if (cmd->is_builtin)
 		exit(execute_builtin_in_pipe(cmd, STDIN_FILENO, STDOUT_FILENO));
@@ -91,6 +137,51 @@ static void	execute_pipeline_child(t_command *cmd, int **pipes, int cmd_index,
 	execve(path, cmd->args, envp);
 	perror("execve failed");
 	exit(1);
+}
+
+static int prepare_heredocs_in_pipeline(t_pipeline *pipeline)
+{
+	t_command *current = pipeline->commands;
+	t_redirection *redir;
+	
+	while (current)
+	{
+		redir = current->redirections;
+		while (redir)
+		{
+			if (redir->type == REDIR_HEREDOC)
+			{
+				// Handle heredoc in parent process before forking
+				redir->heredoc_fd = handle_heredoc(redir->delimiter);
+				if (redir->heredoc_fd == -1)
+					return (-1);
+			}
+			redir = redir->next;
+		}
+		current = current->next;
+	}
+	return (0);
+}
+
+static void cleanup_heredocs_in_pipeline(t_pipeline *pipeline)
+{
+	t_command *current = pipeline->commands;
+	t_redirection *redir;
+	
+	while (current)
+	{
+		redir = current->redirections;
+		while (redir)
+		{
+			if (redir->type == REDIR_HEREDOC && redir->heredoc_fd != -1)
+			{
+				close(redir->heredoc_fd);
+				redir->heredoc_fd = -1;
+			}
+			redir = redir->next;
+		}
+		current = current->next;
+	}
 }
 
 int	execute_pipeline(t_pipeline *pipeline, char **envp)
@@ -106,10 +197,17 @@ int	execute_pipeline(t_pipeline *pipeline, char **envp)
 	if (pipeline->cmd_count == 1)
 		return (execute_single_command(pipeline->commands, envp));
 
+	// Handle heredocs BEFORE forking any child processes
+	if (prepare_heredocs_in_pipeline(pipeline) == -1)
+		return (-1);
+
 	pipes = create_pipes(pipeline->cmd_count - 1);
 	pids = malloc(sizeof(pid_t) * pipeline->cmd_count);
 	if (!pipes || !pids)
+	{
+		cleanup_heredocs_in_pipeline(pipeline);
 		return (-1);
+	}
 	current = pipeline->commands;
 	i = 0;
 	while (current && i < pipeline->cmd_count)
@@ -118,6 +216,7 @@ int	execute_pipeline(t_pipeline *pipeline, char **envp)
 		if (pids[i] == -1)
 		{
 			perror("fork failed");
+			cleanup_heredocs_in_pipeline(pipeline);
 			return (-1);
 		}
 		if (pids[i] == 0)
@@ -131,6 +230,7 @@ int	execute_pipeline(t_pipeline *pipeline, char **envp)
 	close_all_pipes(pipes, pipeline->cmd_count - 1);
 	status = wait_for_all_children(pids, pipeline->cmd_count);
 
+	cleanup_heredocs_in_pipeline(pipeline);
 	free_pipes(pipes, pipeline->cmd_count - 1);
 	free(pids);
 	return (status);
