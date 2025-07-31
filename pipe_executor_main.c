@@ -80,24 +80,48 @@ static int setup_redirections_child(t_redirection *redirections)
 		{
 			fd = open(current->file, O_RDONLY);
 			if (fd == -1)
-				return (perror(current->file), -1);
-			dup2(fd, STDIN_FILENO);
+			{
+				perror(current->file);
+				return (-1);
+			}
+			if (dup2(fd, STDIN_FILENO) == -1)
+			{
+				perror("dup2 failed");
+				close(fd);
+				return (-1);
+			}
 			close(fd);
 		}
 		else if (current->type == REDIR_OUT)
 		{
 			fd = open(current->file, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 			if (fd == -1)
-				return (perror(current->file), -1);
-			dup2(fd, STDOUT_FILENO);
+			{
+				perror(current->file);
+				return (-1);
+			}
+			if (dup2(fd, STDOUT_FILENO) == -1)
+			{
+				perror("dup2 failed");
+				close(fd);
+				return (-1);
+			}
 			close(fd);
 		}
 		else if (current->type == REDIR_APPEND)
 		{
 			fd = open(current->file, O_CREAT | O_WRONLY | O_APPEND, 0644);
 			if (fd == -1)
-				return (perror(current->file), -1);
-			dup2(fd, STDOUT_FILENO);
+			{
+				perror(current->file);
+				return (-1);
+			}
+			if (dup2(fd, STDOUT_FILENO) == -1)
+			{
+				perror("dup2 failed");
+				close(fd);
+				return (-1);
+			}
 			close(fd);
 		}
 		else if (current->type == REDIR_HEREDOC)
@@ -105,7 +129,12 @@ static int setup_redirections_child(t_redirection *redirections)
 			// Heredoc FD should already be prepared in parent process
 			if (current->heredoc_fd != -1)
 			{
-				dup2(current->heredoc_fd, STDIN_FILENO);
+				if (dup2(current->heredoc_fd, STDIN_FILENO) == -1)
+				{
+					perror("dup2 failed");
+					close(current->heredoc_fd);
+					return (-1);
+				}
 				close(current->heredoc_fd);
 			}
 		}
