@@ -6,12 +6,13 @@
 /*   By: aboumata <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 10:53:15 by aboumata          #+#    #+#             */
-/*   Updated: 2025/06/20 10:53:18 by aboumata         ###   ########.fr       */
+/*   Updated: 2025/08/02 10:53:18 by aboumata         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "minishell_exec.h"
+#include "signals/signals.h"
 
 char	**create_argv(char **tokens)
 {
@@ -43,17 +44,15 @@ int	wait_for_child(pid_t pid)
 
 	if (pid <= 0)
 		return (-1);
+	setup_parent_execution_signals();
 	if (waitpid(pid, &status, 0) == -1)
 	{
 		perror("waitpid failed");
+		restore_interactive_signals();
 		return (-1);
 	}
-	if (WIFEXITED(status))
-		return (WEXITSTATUS(status));
-	else if (WIFSIGNALED(status))
-		return (128 + WTERMSIG(status));
-	else
-		return (-1);
+	restore_interactive_signals();
+	return (handle_child_exit_status(status));
 }
 
 int	execute_command(const char *path, char **argv, char **envp)
@@ -70,6 +69,7 @@ int	execute_command(const char *path, char **argv, char **envp)
 	}
 	if (pid == 0)
 	{
+		setup_child_signals();
 		execve(path, argv, envp);
 		perror("execve failed");
 		exit(EXIT_FAILURE);

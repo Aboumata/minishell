@@ -9,6 +9,7 @@ SRC = free_env.c minishell.c utils_env_V1.c utils_env_V2.c quick_sort.c path_uti
 	  parsing/token_processor_2.c parsing/utils_export.c parsing/mini_shell_split_1.c parsing/expander.c parsing/mini_shell_split_2.c\
 	  parsing/expander_utils.c builtins/cd.c builtins/pwd.c builtins/echo.c builtins/env.c \
 	  builtins/exit.c builtins/export.c builtins/unset.c\
+	  signals/signals_interactive.c signals/signals_execution.c signals/signals_heredoc.c\
 
 OBJCS = ${SRC:.c=.o}
 

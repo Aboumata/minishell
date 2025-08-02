@@ -6,14 +6,14 @@
 /*   By: aboumata <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 14:00:00 by aboumata          #+#    #+#             */
-/*   Updated: 2025/07/28 14:00:00 by aboumata         ###   ########.fr       */
+/*   Updated: 2025/08/02 14:00:00 by aboumata         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #include "minishell.h"
 #include "redirection_structures.h"
 #include "parsing/parsing.h"
+#include "signals/signals.h"
 
 char	*generate_temp_filename(void)
 {
@@ -43,33 +43,37 @@ int	write_heredoc_content(int fd, const char *delimiter)
 {
 	char	*line;
 	char	*expanded_line;
+	pid_t	pid;
+	int		status;
 
-	while (1)
+	pid = fork();
+	if (pid == 0)
 	{
-		line = readline("> ");
-		if (!line)
-			break ;
-		if (safe_strcmp(line, delimiter))
+		setup_heredoc_signals();
+		while (1)
 		{
+			line = readline("> ");
+			if (!line || safe_strcmp(line, delimiter))
+			{
+				if (line)
+					free(line);
+				break ;
+			}
+			expanded_line = expand_variables(line, g_env, g_last_status);
+			if (expanded_line)
+			{
+				write(fd, expanded_line, ft_strlen(expanded_line));
+				free(expanded_line);
+			}
+			else
+				write(fd, line, ft_strlen(line));
+			write(fd, "\n", 1);
 			free(line);
-			break ;
 		}
-
-		// Expand variables in the line
-		expanded_line = expand_variables(line, g_env, g_last_status);
-		if (expanded_line)
-		{
-			write(fd, expanded_line, ft_strlen(expanded_line));
-			free(expanded_line);
-		}
-		else
-		{
-			write(fd, line, ft_strlen(line));
-		}
-		write(fd, "\n", 1);
-		free(line);
+		exit(0);
 	}
-	return (0);
+	waitpid(pid, &status, 0);
+	return (handle_child_exit_status(status));
 }
 
 int	create_heredoc_file(const char *delimiter)
@@ -89,7 +93,7 @@ int	create_heredoc_file(const char *delimiter)
 	}
 	result = write_heredoc_content(fd, delimiter);
 	close(fd);
-	if (result == -1)
+	if (result != 0)
 	{
 		unlink(temp_filename);
 		free(temp_filename);
@@ -101,12 +105,6 @@ int	create_heredoc_file(const char *delimiter)
 	return (fd);
 }
 
-void	cleanup_heredoc_file(const char *filename)
-{
-	if (filename)
-		unlink(filename);
-}
-
 int	handle_heredoc(const char *delimiter)
 {
 	int	fd;
@@ -116,6 +114,8 @@ int	handle_heredoc(const char *delimiter)
 	fd = create_heredoc_file(delimiter);
 	if (fd == -1)
 	{
+		if (is_heredoc_interrupted())
+			return (-2);
 		perror("heredoc creation failed");
 		return (-1);
 	}

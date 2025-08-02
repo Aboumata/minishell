@@ -2,12 +2,11 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
-/*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aboumata <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 15:08:49 by aboumata          #+#    #+#             */
-/*   Updated: 2025/05/03 15:08:50 by aboumata         ###   ########.fr       */
+/*   Updated: 2025/08/02 15:08:50 by aboumata         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,23 +14,10 @@
 #include "minishell_exec.h"
 #include "parsing/parsing.h"
 #include "pipe_structures.h"
+#include "signals/signals.h"
 
 t_envs		*g_env = NULL;
 int			g_last_status = 0;
-
-void	handle_sigint(int sig)
-{
-	(void)sig;
-	write(1, "\n", 1);
-	rl_on_new_line();
-	rl_replace_line("", 0);
-	rl_redisplay();
-}
-
-void	handle_sigquit(int sig)
-{
-	(void)sig;
-}
 
 int	is_builtin_match(const char *input, const char *cmd, int len)
 {
@@ -55,6 +41,12 @@ static void	handle_input(char *input)
 {
 	extern char	**environ;
 
+	if (check_signal_flag())
+	{
+		g_last_status = 130;
+		reset_signal_flag();
+		return ;
+	}
 	handle_input_with_pipes(input, environ);
 }
 
@@ -74,16 +66,13 @@ static void	set_prompt(char *prompt, char *cwd, char *home)
 	ft_strlcat(prompt, "$ ", 4120);
 }
 
-static void	setup_signals(void)
-{
-	signal(SIGINT, handle_sigint);
-	signal(SIGQUIT, handle_sigquit);
-}
-
 static int	process_input(char *input)
 {
 	if (!input)
+	{
+		write(STDOUT_FILENO, "exit\n", 5);
 		return (0);
+	}
 	if (*input)
 	{
 		add_history(input);
@@ -110,9 +99,10 @@ int	main(const int argc, char **argv, char *envp[])
 	(void)argc;
 	(void)argv;
 	g_env = init_env(envp);
-	setup_signals();
+	setup_interactive_signals();
 	while (1)
 	{
+		reset_signal_flag();
 		home = getenv("HOME");
 		set_prompt(prompt, cwd, home);
 		input = readline(prompt);
@@ -120,5 +110,5 @@ int	main(const int argc, char **argv, char *envp[])
 			break ;
 	}
 	cleanup_and_exit();
-	return (0);
+	return (g_last_status);
 }
