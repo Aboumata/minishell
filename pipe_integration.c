@@ -33,7 +33,6 @@ static void	print_raw_syntax_error(char *token)
 	write_str(STDERR_FILENO, "'\n");
 }
 
-// Check if character at position i is the start of >, >>, <, or <<
 static int	is_redirect_start(const char *input, int i)
 {
 	if (input[i] == '>' || input[i] == '<')
@@ -41,7 +40,6 @@ static int	is_redirect_start(const char *input, int i)
 	return (0);
 }
 
-// Get the full redirection operator starting at position i
 static int	get_redirect_length(const char *input, int i)
 {
 	if (input[i] == '>' && input[i + 1] == '>')
@@ -53,7 +51,20 @@ static int	get_redirect_length(const char *input, int i)
 	return (0);
 }
 
-// Skip whitespace and find next meaningful character
+static int	is_and_operator(const char *input, int i)
+{
+	if (input[i] == '&' && input[i + 1] == '&')
+		return (1);
+	return (0);
+}
+
+static int	is_semicolon(const char *input, int i)
+{
+	if (input[i] == ';')
+		return (1);
+	return (0);
+}
+
 static int	skip_whitespace(const char *input, int start)
 {
 	int i = start;
@@ -62,8 +73,7 @@ static int	skip_whitespace(const char *input, int start)
 	return (i);
 }
 
-// Validate syntax on raw input string before any parsing
-static int	validate_raw_syntax(const char *input)
+static int	validate_and_operators(const char *input)
 {
 	int		i;
 	char	quote;
@@ -71,16 +81,111 @@ static int	validate_raw_syntax(const char *input)
 	i = 0;
 	quote = 0;
 
-	// Skip leading whitespace
 	i = skip_whitespace(input, 0);
 
-	// Check for starting with pipe
+	if (is_and_operator(input, i))
+	{
+		print_raw_syntax_error("&&");
+		return (0);
+	}
+
+	while (input[i])
+	{
+		if (!quote && (input[i] == '\'' || input[i] == '"'))
+			quote = input[i];
+		else if (quote && input[i] == quote)
+			quote = 0;
+		else if (!quote && is_and_operator(input, i))
+		{
+			int j = skip_whitespace(input, i + 2);
+
+			if (!input[j])
+			{
+				print_raw_syntax_error("newline");
+				return (0);
+			}
+
+			if (is_and_operator(input, j))
+			{
+				print_raw_syntax_error("&&");
+				return (0);
+			}
+
+			if (input[j] == '|')
+			{
+				print_raw_syntax_error("|");
+				return (0);
+			}
+
+			i++;
+		}
+		i++;
+	}
+	return (1);
+}
+
+static int	validate_semicolon_operators(const char *input)
+{
+	int		i;
+	char	quote;
+
+	i = 0;
+	quote = 0;
+
+	i = skip_whitespace(input, 0);
+	if (is_semicolon(input, i))
+	{
+		print_raw_syntax_error(";");
+		return (0);
+	}
+
+	while (input[i])
+	{
+		if (!quote && (input[i] == '\'' || input[i] == '"'))
+			quote = input[i];
+		else if (quote && input[i] == quote)
+			quote = 0;
+		else if (!quote && is_semicolon(input, i))
+		{
+			int j = skip_whitespace(input, i + 1);
+			if (is_semicolon(input, j))
+			{
+				print_raw_syntax_error(";");
+				return (0);
+			}
+			if (input[j] == '|')
+			{
+				print_raw_syntax_error("|");
+				return (0);
+			}
+			if (is_and_operator(input, j))
+			{
+				print_raw_syntax_error("&&");
+				return (0);
+			}
+		}
+		i++;
+	}
+	return (1);
+}
+
+static int	validate_raw_syntax(const char *input)
+{
+	int		i;
+	char	quote;
+
+	i = 0;
+	quote = 0;
+	if (!validate_and_operators(input))
+		return (0);
+	if (!validate_semicolon_operators(input))
+		return (0);
+	i = skip_whitespace(input, 0);
 	if (input[i] == '|')
 	{
 		print_raw_syntax_error("|");
 		return (0);
 	}
-
 	while (input[i])
 	{
 		if (!quote && (input[i] == '\'' || input[i] == '"'))
@@ -92,15 +197,11 @@ static int	validate_raw_syntax(const char *input)
 			if (is_redirect_start(input, i))
 			{
 				int redirect_len = get_redirect_length(input, i);
-
-				// Check for triple redirect (>>> case)
 				if (redirect_len == 2 && input[i] == '>' && input[i + 2] == '>')
 				{
 					print_raw_syntax_error(">");
 					return (0);
 				}
-
-				// Check what comes after this redirection
 				int j = skip_whitespace(input, i + redirect_len);
 
 				if (!input[j])
@@ -109,7 +210,6 @@ static int	validate_raw_syntax(const char *input)
 					return (0);
 				}
 
-				// Check for redirection followed by another redirection operator
 				if (is_redirect_start(input, j))
 				{
 					int next_len = get_redirect_length(input, j);
@@ -127,11 +227,23 @@ static int	validate_raw_syntax(const char *input)
 					return (0);
 				}
 
-				i += redirect_len - 1; // -1 because loop will increment
+				if (is_and_operator(input, j))
+				{
+					print_raw_syntax_error("&&");
+					return (0);
+				}
+
+
+				if (is_semicolon(input, j))
+				{
+					print_raw_syntax_error(";");
+					return (0);
+				}
+
+				i += redirect_len - 1;
 			}
 			else if (input[i] == '|')
 			{
-				// Check what comes after this pipe
 				int j = skip_whitespace(input, i + 1);
 
 				if (!input[j])
@@ -140,15 +252,23 @@ static int	validate_raw_syntax(const char *input)
 					return (0);
 				}
 
-				// Check for consecutive pipes
 				if (input[j] == '|')
 				{
 					print_raw_syntax_error("|");
 					return (0);
 				}
 
-				// Check for pipe followed by redirection - this should be handled by token validation
-				// For raw syntax, we only catch the most obvious cases
+				if (is_and_operator(input, j))
+				{
+					print_raw_syntax_error("&&");
+					return (0);
+				}
+
+				if (is_semicolon(input, j))
+				{
+					print_raw_syntax_error(";");
+					return (0);
+				}
 			}
 		}
 		i++;
@@ -161,7 +281,6 @@ static int	handle_pipeline_execution(char **args, char **environ)
 	t_pipeline	*pipeline;
 	int			status;
 
-	// Additional validation on parsed tokens (redundant but safe)
 	if (!validate_pipe_syntax(args))
 	{
 		g_last_status = 2;
@@ -269,21 +388,17 @@ void	handle_input_with_pipes(char *input, char **environ)
 {
 	char	**args;
 
-	// FIRST: Validate raw syntax before any parsing to prevent segfaults
 	if (!validate_raw_syntax(input))
 	{
 		g_last_status = 2;
 		return;
 	}
-
-	// Special handling for export/unset without pipes
 	if (!contains_pipe_in_input(input) && (is_builtin_match(input, "export", 6) || is_builtin_match(input, "unset", 5)))
 	{
 		handle_export_unset(input);
 		return ;
 	}
 
-	// NOW it's safe to parse because we validated syntax first
 	args = parse_command_line(input, g_env, g_last_status);
 	if (!args || !args[0])
 	{
