@@ -6,7 +6,7 @@
 /*   By: aboumata <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 19:09:07 by aboumata          #+#    #+#             */
-/*   Updated: 2025/05/15 19:09:08 by aboumata         ###   ########.fr       */
+/*   Updated: 2025/08/04 12:00:00 by aboumata         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,22 @@ static void	handle_double_quotes(const char *input, int *i, char *out, int *j,
 	ctx.i = i;
 	while (input[*i] && input[*i] != '"' && *j < 4095)
 	{
-		if (input[*i] == '$')
+		if (input[*i] == '\\' && input[*i + 1] == '$')
+		{
+			out[(*j)++] = '$';
+			(*i) += 2;
+		}
+		else if (input[*i] == '\\' && input[*i + 1] == '"')
+		{
+			out[(*j)++] = '"';
+			(*i) += 2;
+		}
+		else if (input[*i] == '\\' && input[*i + 1] == '\\')
+		{
+			out[(*j)++] = '\\';
+			(*i) += 2;
+		}
+		else if (input[*i] == '$')
 			process_dollar(&ctx);
 		else
 			out[(*j)++] = input[(*i)++];
@@ -55,7 +70,23 @@ static void	handle_unquoted(const char *input, int *i, char *out, int *j,
 	ctx.out = out;
 	ctx.j = j;
 	ctx.i = i;
-	if (input[*i] == '$')
+
+	if (input[*i] == '\\' && input[*i + 1] == '$')
+	{
+		out[(*j)++] = '$';
+		(*i) += 2;
+	}
+	else if (input[*i] == '\\' && input[*i + 1] == '\\')
+	{
+		out[(*j)++] = '\\';
+		(*i) += 2;
+	}
+	else if (input[*i] == '\\' && input[*i + 1])
+	{
+		(*i)++;
+		out[(*j)++] = input[(*i)++];
+	}
+	else if (input[*i] == '$')
 		process_dollar(&ctx);
 	else
 		out[(*j)++] = input[(*i)++];
