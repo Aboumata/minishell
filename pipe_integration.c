@@ -176,11 +176,15 @@ static int	validate_raw_syntax(const char *input)
 
 	i = 0;
 	quote = 0;
+
 	if (!validate_and_operators(input))
 		return (0);
+
 	if (!validate_semicolon_operators(input))
 		return (0);
+
 	i = skip_whitespace(input, 0);
+
 	if (input[i] == '|')
 	{
 		print_raw_syntax_error("|");
@@ -226,14 +230,11 @@ static int	validate_raw_syntax(const char *input)
 					print_raw_syntax_error("|");
 					return (0);
 				}
-
 				if (is_and_operator(input, j))
 				{
 					print_raw_syntax_error("&&");
 					return (0);
 				}
-
-
 				if (is_semicolon(input, j))
 				{
 					print_raw_syntax_error(";");
@@ -251,19 +252,16 @@ static int	validate_raw_syntax(const char *input)
 					print_raw_syntax_error("newline");
 					return (0);
 				}
-
 				if (input[j] == '|')
 				{
 					print_raw_syntax_error("|");
 					return (0);
 				}
-
 				if (is_and_operator(input, j))
 				{
 					print_raw_syntax_error("&&");
 					return (0);
 				}
-
 				if (is_semicolon(input, j))
 				{
 					print_raw_syntax_error(";");
@@ -281,6 +279,7 @@ static int	handle_pipeline_execution(char **args, char **environ)
 	t_pipeline	*pipeline;
 	int			status;
 
+	// Additional validation on parsed tokens (redundant but safe)
 	if (!validate_pipe_syntax(args))
 	{
 		g_last_status = 2;
@@ -398,7 +397,6 @@ void	handle_input_with_pipes(char *input, char **environ)
 		handle_export_unset(input);
 		return ;
 	}
-
 	args = parse_command_line(input, g_env, g_last_status);
 	if (!args || !args[0])
 	{

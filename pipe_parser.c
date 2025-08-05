@@ -73,6 +73,7 @@ static int	parse_commands(t_pipeline *pipeline, char **tokens)
 	int		start;
 	int		i;
 	char	**args;
+	int		result;
 
 	start = 0;
 	i = 0;
@@ -84,7 +85,11 @@ static int	parse_commands(t_pipeline *pipeline, char **tokens)
 				args = extract_command_args(tokens, &start, i);
 			else
 				args = extract_command_args(tokens, &start, i + 1);
-			if (!args || !add_command_to_pipeline(pipeline, args))
+			if (!args)
+				return (0);
+			result = add_command_to_pipeline(pipeline, args);
+			free_split(args);
+			if (!result)
 				return (0);
 			if (!tokens[i + 1])
 				break ;
