@@ -58,7 +58,7 @@ int				save_original_fds(void);
 /* heredoc_handler.c */
 int				handle_heredoc(const char *delimiter);
 char			*generate_temp_filename(void);
-int				write_heredoc_content(int fd, const char *delimiter);
+int				write_heredoc_content(int fd, const char *delimiter, int should_expand);
 int				create_heredoc_file(const char *delimiter);
 void			cleanup_heredoc_file(const char *filename);
 

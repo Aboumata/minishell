@@ -6,7 +6,7 @@
 /*   By: aboumata <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 17:55:14 by aboumata          #+#    #+#             */
-/*   Updated: 2025/05/15 17:55:15 by aboumata         ###   ########.fr       */
+/*   Updated: 2025/08/08 17:55:15 by aboumata         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,7 @@ char			**allocate_token_array(int count);
 void			cleanup_expanded_tokens(char **expanded_tokens, int index);
 char			*process_regular_token(char *token, t_envs *env, int last_status);
 char			*process_single_token(char *token, t_envs *env, int last_status);
+char			*process_single_token_with_context(char *token, t_envs *env, int last_status, char **all_tokens, int current_index);
 int				validate_input_parameters(const char *input, t_envs *env);
 char			**handle_tokenization_error(void);
 

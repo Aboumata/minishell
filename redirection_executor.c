@@ -181,7 +181,7 @@ int	execute_with_redirections(t_cmd_with_redir *cmd, char **envp)
 		restore_original_fds(saved_stdin, saved_stdout);
 		return (status);
 	}
-	
+
 	// For external commands, we need to fork
 	path = find_executable(cmd->args[0]);
 	if (!path)

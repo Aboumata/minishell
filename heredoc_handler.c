@@ -6,7 +6,7 @@
 /*   By: aboumata <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 14:00:00 by aboumata          #+#    #+#             */
-/*   Updated: 2025/08/02 14:00:00 by aboumata         ###   ########.fr       */
+/*   Updated: 2025/08/08 14:00:00 by aboumata         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,51 @@ char	*generate_temp_filename(void)
 	return (filename);
 }
 
-int	write_heredoc_content(int fd, const char *delimiter)
+// Check if delimiter was originally quoted (has our special marker)
+static int	was_delimiter_quoted(const char *delimiter)
+{
+	return (delimiter && delimiter[0] == '\x01');
+}
+
+// Remove our special quote marker and return clean delimiter and expansion status
+static char *clean_delimiter(const char *delimiter, int *should_expand)
+{
+	char *result;
+
+	if (was_delimiter_quoted(delimiter))
+	{
+		// Was quoted - remove marker and disable expansion
+		*should_expand = 0;
+		result = ft_strdup(delimiter + 1); // Skip the marker
+	}
+	else
+	{
+		// Was not quoted - enable expansion
+		*should_expand = 1;
+		result = ft_strdup(delimiter);
+	}
+
+	return (result);
+}
+
+/* Check if delimiter has quotes and remove them, return whether to expand */
+int	process_delimiter(char **delimiter, int *should_expand)
+{
+	char	*processed;
+
+	if (!delimiter || !*delimiter)
+		return (-1);
+
+	processed = clean_delimiter(*delimiter, should_expand);
+	if (!processed)
+		return (-1);
+
+	free(*delimiter);
+	*delimiter = processed;
+	return (0);
+}
+
+int	write_heredoc_content(int fd, const char *delimiter, int should_expand)
 {
 	char	*line;
 	char	*expanded_line;
@@ -59,14 +103,22 @@ int	write_heredoc_content(int fd, const char *delimiter)
 					free(line);
 				break ;
 			}
-			expanded_line = expand_variables(line, g_env, g_last_status);
-			if (expanded_line)
+
+			if (should_expand)
 			{
-				write(fd, expanded_line, ft_strlen(expanded_line));
-				free(expanded_line);
+				expanded_line = expand_variables(line, g_env, g_last_status);
+				if (expanded_line)
+				{
+					write(fd, expanded_line, ft_strlen(expanded_line));
+					free(expanded_line);
+				}
+				else
+					write(fd, line, ft_strlen(line));
 			}
 			else
+			{
 				write(fd, line, ft_strlen(line));
+			}
 			write(fd, "\n", 1);
 			free(line);
 		}
@@ -76,23 +128,43 @@ int	write_heredoc_content(int fd, const char *delimiter)
 	return (handle_child_exit_status(status));
 }
 
-int	create_heredoc_file(const char *delimiter)
+int	create_heredoc_file(const char *original_delimiter)
 {
 	char	*temp_filename;
+	char	*delimiter;
 	int		fd;
 	int		result;
+	int		should_expand;
+
+	delimiter = ft_strdup(original_delimiter);
+	if (!delimiter)
+		return (-1);
+
+	if (process_delimiter(&delimiter, &should_expand) == -1)
+	{
+		free(delimiter);
+		return (-1);
+	}
 
 	temp_filename = generate_temp_filename();
 	if (!temp_filename)
+	{
+		free(delimiter);
 		return (-1);
+	}
+
 	fd = open(temp_filename, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 	if (fd == -1)
 	{
 		free(temp_filename);
+		free(delimiter);
 		return (-1);
 	}
-	result = write_heredoc_content(fd, delimiter);
+
+	result = write_heredoc_content(fd, delimiter, should_expand);
 	close(fd);
+	free(delimiter);
+
 	if (result != 0)
 	{
 		unlink(temp_filename);

@@ -6,7 +6,7 @@
 /*   By: aboumata <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 16:00:00 by aboumata          #+#    #+#             */
-/*   Updated: 2025/07/26 16:00:00 by aboumata         ###   ########.fr       */
+/*   Updated: 2025/08/08 16:00:00 by aboumata         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ char	**expand_tokens(char **tokens, t_envs *env, int last_status)
 	i = 0;
 	while (i < count)
 	{
-		expanded_tokens[i] = process_single_token(tokens[i], env, last_status);
+		expanded_tokens[i] = process_single_token_with_context(tokens[i], env, last_status, tokens, i);
 		if (!expanded_tokens[i])
 		{
 			cleanup_expanded_tokens(expanded_tokens, i);

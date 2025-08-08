@@ -6,7 +6,7 @@
 /*   By: aboumata <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 16:00:00 by aboumata          #+#    #+#             */
-/*   Updated: 2025/07/26 16:00:00 by aboumata         ###   ########.fr       */
+/*   Updated: 2025/08/08 16:00:00 by aboumata         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,9 +56,73 @@ char	*process_regular_token(char *token, t_envs *env, int last_status)
     return (ft_strdup(""));
 }
 
+static int	is_heredoc_delimiter_position(char **tokens, int i)
+{
+    if (i == 0)
+        return (0);
+    if (tokens[i - 1] && ft_strncmp(tokens[i - 1], "<<", 2) == 0 && ft_strlen(tokens[i - 1]) == 2)
+        return (1);
+    return (0);
+}
+
+static int	token_has_quotes(const char *token)
+{
+    int i = 0;
+
+    while (token[i])
+    {
+        if (token[i] == '\'' || token[i] == '"')
+            return (1);
+        i++;
+    }
+    return (0);
+}
+
+static char	*process_heredoc_delimiter(char *token, t_envs *env, int last_status)
+{
+    char	*result;
+
+    if (token_has_quotes(token))
+    {
+        char *unquoted = strip_quotes(token);
+        if (!unquoted)
+            return (ft_strdup(""));
+        size_t len = ft_strlen(unquoted);
+        result = malloc(len + 2);
+        if (!result)
+        {
+            free(unquoted);
+            return (ft_strdup(""));
+        }
+        result[0] = '\x01';
+        ft_strlcpy(result + 1, unquoted, len + 1);
+        free(unquoted);
+        return (result);
+    }
+    else
+    {
+        char *expanded = expand_variables(token, env, last_status);
+        if (expanded)
+        {
+            result = strip_quotes(expanded);
+            free(expanded);
+            return (result);
+        }
+        return (ft_strdup(""));
+    }
+}
 char	*process_single_token(char *token, t_envs *env, int last_status)
 {
     if (is_special(token, 0))
         return (ft_strdup(token));
+    return (process_regular_token(token, env, last_status));
+}
+
+char	*process_single_token_with_context(char *token, t_envs *env, int last_status, char **all_tokens, int current_index)
+{
+    if (is_special(token, 0))
+        return (ft_strdup(token));
+    if (is_heredoc_delimiter_position(all_tokens, current_index))
+        return (process_heredoc_delimiter(token, env, last_status));
     return (process_regular_token(token, env, last_status));
 }
