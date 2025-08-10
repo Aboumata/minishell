@@ -1,4 +1,3 @@
-
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
@@ -109,6 +108,35 @@ static int	exec_cmd_with_redirections(t_cmd_with_redir *cmd, char **envp)
 	return (status);
 }
 
+static int	handle_heredoc_only(t_redirection *redirections, char **envp)
+{
+	t_cmd_with_redir	*cmd;
+	char				**default_args;
+	int					status;
+
+	default_args = malloc(sizeof(char *) * 2);
+	if (!default_args)
+		return (1);
+	default_args[0] = ft_strdup("cat");
+	default_args[1] = NULL;
+	if (!default_args[0])
+	{
+		free(default_args);
+		return (1);
+	}
+	cmd = create_cmd_with_redir(default_args);
+	if (!cmd)
+	{
+		free_split(default_args);
+		return (1);
+	}
+	cmd->redirections = redirections;
+	cmd->is_builtin = 0;
+	status = exec_cmd_with_redirections(cmd, envp);
+	free_cmd_with_redir(cmd);
+	return (status);
+}
+
 static int	handle_command_with_redirections(char **tokens, char **envp)
 {
 	t_cmd_with_redir	*cmd;
@@ -117,6 +145,9 @@ static int	handle_command_with_redirections(char **tokens, char **envp)
 	int					status;
 
 	redirections = parse_redirections(tokens, &clean_args);
+	if (!clean_args && redirections)
+		return (handle_heredoc_only(redirections, envp));
+
 	if (!clean_args)
 	{
 		free_redirection(redirections);
