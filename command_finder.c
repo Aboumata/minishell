@@ -12,6 +12,7 @@
 
 #include "minishell.h"
 #include "minishell_exec.h"
+#include <sys/stat.h>
 
 char	*build_full_path(char *directory, char *command)
 {
@@ -43,16 +44,31 @@ int	is_executable(const char *path)
 	return (0);
 }
 
+int	is_directory(const char *path)
+{
+	struct stat	path_stat;
+
+	if (stat(path, &path_stat) != 0)
+		return (0);
+	return (S_ISDIR(path_stat.st_mode));
+}
+
 char	*find_executable(char *command)
 {
 	char	**directories;
 	char	*full_path;
 	int		i;
 
-	if (command[0] == '/' || command[0] == '.')
+	if (command[0] == '/' || command[0] == '.' || ft_strchr(command, '/'))
 	{
-		if (is_executable(command))
-			return (ft_strdup(command));
+		if (access(command, F_OK) == 0)
+		{
+			if (is_directory(command))
+				return (ft_strdup("IS_DIRECTORY"));
+			if (access(command, X_OK) == 0)
+				return (ft_strdup(command));
+			return (ft_strdup("PERMISSION_DENIED"));
+		}
 		return (NULL);
 	}
 	directories = get_path_directories();
@@ -62,10 +78,19 @@ char	*find_executable(char *command)
 	while (directories[i])
 	{
 		full_path = build_full_path(directories[i], command);
-		if (full_path && is_executable(full_path))
+		if (full_path && access(full_path, F_OK) == 0)
 		{
-			free_path_directories(directories);
-			return (full_path);
+			if (is_directory(full_path))
+			{
+				free(full_path);
+				free_path_directories(directories);
+				return (ft_strdup("IS_DIRECTORY"));
+			}
+			if (access(full_path, X_OK) == 0)
+			{
+				free_path_directories(directories);
+				return (full_path);
+			}
 		}
 		free(full_path);
 		i++;
