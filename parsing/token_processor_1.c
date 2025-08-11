@@ -78,7 +78,7 @@ static int	token_has_quotes(const char *token)
     return (0);
 }
 
-static char	*process_heredoc_delimiter(char *token, t_envs *env, int last_status)
+static char	*process_heredoc_delimiter(char *token)
 {
     char	*result;
 
@@ -100,17 +100,9 @@ static char	*process_heredoc_delimiter(char *token, t_envs *env, int last_status
         return (result);
     }
     else
-    {
-        char *expanded = expand_variables(token, env, last_status);
-        if (expanded)
-        {
-            result = strip_quotes(expanded);
-            free(expanded);
-            return (result);
-        }
-        return (ft_strdup(""));
-    }
+        return (ft_strdup(token));
 }
+
 char	*process_single_token(char *token, t_envs *env, int last_status)
 {
     if (is_special(token, 0))
@@ -123,6 +115,6 @@ char	*process_single_token_with_context(char *token, t_envs *env, int last_statu
     if (is_special(token, 0))
         return (ft_strdup(token));
     if (is_heredoc_delimiter_position(all_tokens, current_index))
-        return (process_heredoc_delimiter(token, env, last_status));
+        return (process_heredoc_delimiter(token));
     return (process_regular_token(token, env, last_status));
 }
