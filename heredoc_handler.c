@@ -39,26 +39,22 @@ char	*generate_temp_filename(void)
 	return (filename);
 }
 
-// Check if delimiter was originally quoted (has our special marker)
 static int	was_delimiter_quoted(const char *delimiter)
 {
 	return (delimiter && delimiter[0] == '\x01');
 }
 
-// Remove our special quote marker and return clean delimiter and expansion status
 static char *clean_delimiter(const char *delimiter, int *should_expand)
 {
 	char *result;
 
 	if (was_delimiter_quoted(delimiter))
 	{
-		// Was quoted - remove marker and disable expansion
 		*should_expand = 0;
-		result = ft_strdup(delimiter + 1); // Skip the marker
+		result = ft_strdup(delimiter + 1);
 	}
 	else
 	{
-		// Was not quoted - enable expansion
 		*should_expand = 1;
 		result = ft_strdup(delimiter);
 	}
@@ -66,7 +62,6 @@ static char *clean_delimiter(const char *delimiter, int *should_expand)
 	return (result);
 }
 
-/* Check if delimiter has quotes and remove them, return whether to expand */
 int	process_delimiter(char **delimiter, int *should_expand)
 {
 	char	*processed;
