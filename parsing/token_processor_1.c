@@ -81,13 +81,15 @@ static int	token_has_quotes(const char *token)
 static char	*process_heredoc_delimiter(char *token)
 {
     char	*result;
+    char	*unquoted;
+    size_t	len;
 
     if (token_has_quotes(token))
     {
-        char *unquoted = strip_quotes(token);
+        unquoted = strip_quotes(token);
         if (!unquoted)
             return (ft_strdup(""));
-        size_t len = ft_strlen(unquoted);
+        len = ft_strlen(unquoted);
         result = malloc(len + 2);
         if (!result)
         {
