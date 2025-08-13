@@ -1,4 +1,3 @@
-
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
@@ -171,22 +170,12 @@ static void	execute_pipeline_child(t_command *cmd, int **pipes, int cmd_index,
 static int prepare_heredocs_in_pipeline(t_pipeline *pipeline)
 {
 	t_command *current = pipeline->commands;
-	t_redirection *redir;
 	
 	while (current)
 	{
-		redir = current->redirections;
-		while (redir)
-		{
-			if (redir->type == REDIR_HEREDOC)
-			{
-				// Handle heredoc in parent process before forking
-				redir->heredoc_fd = handle_heredoc(redir->delimiter);
-				if (redir->heredoc_fd == -1)
-					return (-1);
-			}
-			redir = redir->next;
-		}
+		// Process all heredocs for this command at once
+		if (process_all_heredocs(current->redirections) != 0)
+			return (-1);
 		current = current->next;
 	}
 	return (0);

@@ -92,15 +92,12 @@ int	process_delimiter(char **delimiter, int *should_expand)
 	return (0);
 }
 
-int	write_heredoc_content(int fd, char *delimiter, int should_expand)
+int	write_heredoc_content(int fd, char *delimiter, int should_expand, int line_num)
 {
 	char		*line;
 	char		*expanded_line;
 	pid_t		pid;
 	int			status;
-	int			current_line_num;
-
-	current_line_num = g_heredoc_line_counter;
 
 	pid = fork();
 	if (pid == 0)
@@ -112,7 +109,7 @@ int	write_heredoc_content(int fd, char *delimiter, int should_expand)
 			if (!line)
 			{
 				ft_putstr_fd("bash: warning: here-document at line ", 2);
-				ft_putnbr_fd(current_line_num, 2);
+				ft_putnbr_fd(line_num, 2);
 				ft_putstr_fd(" delimited by end-of-file (wanted `", 2);
 				ft_putstr_fd(delimiter, 2);
 				ft_putstr_fd("')\n", 2);
@@ -146,7 +143,6 @@ int	write_heredoc_content(int fd, char *delimiter, int should_expand)
 	else if (pid > 0)
 	{
 		waitpid(pid, &status, 0);
-		g_heredoc_line_counter++;
 		return (handle_heredoc_child_exit_status(status));
 	}
 	else
@@ -156,7 +152,7 @@ int	write_heredoc_content(int fd, char *delimiter, int should_expand)
 	}
 }
 
-int	create_heredoc_file(const char *original_delimiter)
+int	create_heredoc_file(const char *original_delimiter, int line_num)
 {
 	char	*temp_filename;
 	char	*delimiter;
@@ -185,7 +181,7 @@ int	create_heredoc_file(const char *original_delimiter)
 		free(delimiter);
 		return (-1);
 	}
-	result = write_heredoc_content(fd, delimiter, should_expand);
+	result = write_heredoc_content(fd, delimiter, should_expand, line_num);
 	close(fd);
 	free(delimiter);
 	if (result == 130)
@@ -207,13 +203,13 @@ int	create_heredoc_file(const char *original_delimiter)
 	return (fd);
 }
 
-int	handle_heredoc(const char *delimiter)
+int	handle_heredoc(const char *delimiter, int line_num)
 {
 	int	fd;
 
 	if (!delimiter)
 		return (-1);
-	fd = create_heredoc_file(delimiter);
+	fd = create_heredoc_file(delimiter, line_num);
 	if (fd == -2)
 	{
 		return (-2);
@@ -238,6 +234,7 @@ int	process_all_heredocs(t_redirection *redirections)
 	int				heredoc_count;
 	t_redirection	**heredoc_array;
 	int				i;
+	int				current_line_num;
 
 	current = redirections;
 	heredoc_count = 0;
@@ -266,10 +263,14 @@ int	process_all_heredocs(t_redirection *redirections)
 		}
 		current = current->next;
 	}
+
+	// Use the same line number for all heredocs in this command
+	current_line_num = g_heredoc_line_counter;
+
 	i = 0;
 	while (i < heredoc_count)
 	{
-		fd = handle_heredoc(heredoc_array[i]->delimiter);
+		fd = handle_heredoc(heredoc_array[i]->delimiter, current_line_num);
 		if (fd == -2)
 		{
 			free(heredoc_array);
@@ -284,6 +285,14 @@ int	process_all_heredocs(t_redirection *redirections)
 		i++;
 	}
 
+	// Only increment the line counter once per command
+	g_heredoc_line_counter++;
 	free(heredoc_array);
 	return (0);
+}
+
+// Function to be called at the start of each new command processing
+void	increment_heredoc_line_counter(void)
+{
+	g_heredoc_line_counter++;
 }

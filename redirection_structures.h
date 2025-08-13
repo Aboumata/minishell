@@ -56,12 +56,13 @@ int				handle_single_redirection(t_redirection *redir);
 int				save_original_fds(void);
 
 /* heredoc_handler.c */
-int				handle_heredoc(const char *delimiter);
+int				handle_heredoc(const char *delimiter, int line_num);
 char			*generate_temp_filename(void);
-int				write_heredoc_content(int fd, char *delimiter, int should_expand);
-int				create_heredoc_file(const char *delimiter);
+int				write_heredoc_content(int fd, char *delimiter, int should_expand, int line_num);
+int				create_heredoc_file(const char *delimiter, int line_num);
 void			cleanup_heredoc_file(const char *filename);
 int				process_all_heredocs(t_redirection *redirections);
+void			increment_heredoc_line_counter(void);
 
 /* redirection_utils.c */
 void			free_redirection(t_redirection *redir);
