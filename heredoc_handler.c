@@ -15,7 +15,7 @@
 #include "parsing/parsing.h"
 #include "signals/signals.h"
 
-static int g_heredoc_line_counter = 2;
+static int g_heredoc_line_counter = 1;
 
 char	*generate_temp_filename(void)
 {
@@ -263,10 +263,7 @@ int	process_all_heredocs(t_redirection *redirections)
 		}
 		current = current->next;
 	}
-
-	// Use the same line number for all heredocs in this command
 	current_line_num = g_heredoc_line_counter;
-
 	i = 0;
 	while (i < heredoc_count)
 	{
@@ -284,14 +281,11 @@ int	process_all_heredocs(t_redirection *redirections)
 		heredoc_array[i]->heredoc_fd = fd;
 		i++;
 	}
-
-	// Only increment the line counter once per command
 	g_heredoc_line_counter++;
 	free(heredoc_array);
 	return (0);
 }
 
-// Function to be called at the start of each new command processing
 void	increment_heredoc_line_counter(void)
 {
 	g_heredoc_line_counter++;

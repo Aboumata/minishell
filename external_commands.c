@@ -65,7 +65,9 @@ int	handle_external_command(char **tokens, char **envp)
 	path = find_executable(tokens[0]);
 	if (!path)
 	{
-		printf("minishell: %s: command not found\n", tokens[0]);
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(tokens[0], 2);
+		ft_putstr_fd(": command not found\n", 2);
 		return (127);
 	}
 	special_status = handle_special_cases(tokens[0], path);
