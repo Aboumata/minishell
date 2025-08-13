@@ -108,7 +108,7 @@ int	write_heredoc_content(int fd, char *delimiter, int should_expand, int line_n
 			line = readline("> ");
 			if (!line)
 			{
-				ft_putstr_fd("bash: warning: here-document at line ", 2);
+				ft_putstr_fd("minishell: warning: here-document at line ", 2);
 				ft_putnbr_fd(line_num, 2);
 				ft_putstr_fd(" delimited by end-of-file (wanted `", 2);
 				ft_putstr_fd(delimiter, 2);
