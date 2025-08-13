@@ -15,7 +15,7 @@
 #include "parsing/parsing.h"
 #include "signals/signals.h"
 
-static int g_heredoc_line_counter = 1;
+static int g_heredoc_line_counter = 2;
 
 char	*generate_temp_filename(void)
 {
