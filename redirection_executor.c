@@ -100,16 +100,17 @@ int	handle_single_redirection(t_redirection *redir)
 	}
 	else if (redir->type == REDIR_HEREDOC)
 	{
-		fd = handle_heredoc(redir->delimiter);
-		if (fd == -1)
+		/* Use pre-processed heredoc file descriptor */
+		if (redir->heredoc_fd == -1)
 			return (-1);
-		if (dup2(fd, STDIN_FILENO) == -1)
+		if (dup2(redir->heredoc_fd, STDIN_FILENO) == -1)
 		{
 			perror("dup2 failed");
-			close(fd);
+			close(redir->heredoc_fd);
 			return (-1);
 		}
-		close(fd);
+		close(redir->heredoc_fd);
+		redir->heredoc_fd = -1; /* Mark as used */
 	}
 	return (0);
 }
@@ -117,11 +118,19 @@ int	handle_single_redirection(t_redirection *redir)
 int	setup_redirections(t_redirection *redirections)
 {
 	t_redirection	*current;
+	int				result;
+
+	result = process_all_heredocs(redirections);
+	if (result != 0)
+		return (result);
 
 	current = redirections;
 	while (current)
 	{
-		if (handle_single_redirection(current) == -1)
+		result = handle_single_redirection(current);
+		if (result == -2)
+			return (-2);
+		if (result == -1)
 			return (-1);
 		current = current->next;
 	}
@@ -161,46 +170,43 @@ int	execute_with_redirections(t_cmd_with_redir *cmd, char **envp)
 
 	if (!cmd || !cmd->args || !cmd->args[0])
 		return (-1);
-	
 	saved_fds = save_original_fds();
 	if (saved_fds == -1)
 		return (1);
-	
 	saved_stdin = saved_fds >> 16;
 	saved_stdout = saved_fds & 0xFFFF;
-	
-	if (setup_redirections(cmd->redirections) == -1)
+	status = setup_redirections(cmd->redirections);
+	if (status == -2)
+	{
+		restore_original_fds(saved_stdin, saved_stdout);
+		return (130);
+	}
+	if (status == -1)
 	{
 		restore_original_fds(saved_stdin, saved_stdout);
 		return (1);
 	}
-	
 	if (cmd->is_builtin)
 	{
 		status = execute_builtin_redir(cmd);
 		restore_original_fds(saved_stdin, saved_stdout);
 		return (status);
 	}
-
-	// For external commands, we need to fork
 	path = find_executable(cmd->args[0]);
 	if (!path)
 	{
 		restore_original_fds(saved_stdin, saved_stdout);
 		return (127);
 	}
-	
 	pid = fork();
 	if (pid == 0)
 	{
-		// Child process - redirections are already set up
 		execve(path, cmd->args, envp);
 		perror("execve failed");
 		exit(1);
 	}
 	else if (pid > 0)
 	{
-		// Parent process - wait for child
 		waitpid(pid, &status, 0);
 		if (WIFEXITED(status))
 			status = WEXITSTATUS(status);
@@ -214,7 +220,6 @@ int	execute_with_redirections(t_cmd_with_redir *cmd, char **envp)
 		perror("fork failed");
 		status = 1;
 	}
-	
 	restore_original_fds(saved_stdin, saved_stdout);
 	free(path);
 	return (status);

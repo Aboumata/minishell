@@ -62,8 +62,13 @@ static int	exec_cmd_with_redirections(t_cmd_with_redir *cmd, char **envp)
 
 	saved_stdin = dup(STDIN_FILENO);
 	saved_stdout = dup(STDOUT_FILENO);
-
-	if (setup_redirections(cmd->redirections) != 0)
+	status = setup_redirections(cmd->redirections);
+	if (status == -2)
+	{
+		restore_stdio(saved_stdin, saved_stdout);
+		return (130);
+	}
+	if (status != 0)
 	{
 		restore_stdio(saved_stdin, saved_stdout);
 		return (1);
@@ -102,39 +107,32 @@ static int	exec_cmd_with_redirections(t_cmd_with_redir *cmd, char **envp)
 		perror("fork failed");
 		status = 1;
 	}
-
 	restore_stdio(saved_stdin, saved_stdout);
 	free(path);
 	return (status);
 }
 
-static int	handle_heredoc_only(t_redirection *redirections, char **envp)
+static int	handle_heredoc_only(t_redirection *redirections)
 {
-	t_cmd_with_redir	*cmd;
-	char				**default_args;
-	int					status;
+	int		saved_stdin;
+	int		saved_stdout;
+	int		status;
 
-	default_args = malloc(sizeof(char *) * 2);
-	if (!default_args)
-		return (1);
-	default_args[0] = ft_strdup("cat");
-	default_args[1] = NULL;
-	if (!default_args[0])
+	saved_stdin = dup(STDIN_FILENO);
+	saved_stdout = dup(STDOUT_FILENO);
+	status = setup_redirections(redirections);
+	if (status == -2)
 	{
-		free(default_args);
+		restore_stdio(saved_stdin, saved_stdout);
+		return (130);
+	}
+	if (status != 0)
+	{
+		restore_stdio(saved_stdin, saved_stdout);
 		return (1);
 	}
-	cmd = create_cmd_with_redir(default_args);
-	if (!cmd)
-	{
-		free_split(default_args);
-		return (1);
-	}
-	cmd->redirections = redirections;
-	cmd->is_builtin = 0;
-	status = exec_cmd_with_redirections(cmd, envp);
-	free_cmd_with_redir(cmd);
-	return (status);
+	restore_stdio(saved_stdin, saved_stdout);
+	return (0);
 }
 
 static int	handle_command_with_redirections(char **tokens, char **envp)
@@ -146,8 +144,7 @@ static int	handle_command_with_redirections(char **tokens, char **envp)
 
 	redirections = parse_redirections(tokens, &clean_args);
 	if (!clean_args && redirections)
-		return (handle_heredoc_only(redirections, envp));
-
+		return (handle_heredoc_only(redirections));
 	if (!clean_args)
 	{
 		free_redirection(redirections);

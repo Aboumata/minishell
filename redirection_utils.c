@@ -26,6 +26,8 @@ void	free_redirection(t_redirection *redir)
 			free(current->file);
 		if (current->delimiter)
 			free(current->delimiter);
+		if (current->type == REDIR_HEREDOC && current->heredoc_fd != -1)
+			close(current->heredoc_fd);
 		free(current);
 		current = next;
 	}

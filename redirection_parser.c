@@ -50,6 +50,8 @@ t_redirection	*create_redirection(t_redir_type type, const char *target)
 		return (NULL);
 	redir->type = type;
 	redir->next = NULL;
+	redir->heredoc_fd = -1;
+
 	if (type == REDIR_HEREDOC)
 	{
 		redir->delimiter = ft_strdup(target);
