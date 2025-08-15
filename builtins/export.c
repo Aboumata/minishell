@@ -14,7 +14,7 @@
 #include "../minishell.h"
 #include "../parsing/parsing.h"
 
-extern int g_last_status;
+extern int	g_last_status;
 
 bool	is_valid(const char *str)
 {

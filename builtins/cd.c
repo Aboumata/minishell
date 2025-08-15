@@ -2,7 +2,8 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
-/*                                                      +:+      +:+     :+:   */
+/*                                                      +:+     
+	+:+     :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aboumata <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -59,8 +60,9 @@ static char	*get_target_path(char *path)
 
 static int	check_cd_args(char **args)
 {
-	int	count = 0;
+	int	count;
 
+	count = 0;
 	while (args[count])
 		count++;
 	if (count > 2)
