@@ -123,7 +123,6 @@ int	setup_redirections(t_redirection *redirections)
 	result = process_all_heredocs(redirections);
 	if (result != 0)
 		return (result);
-
 	current = redirections;
 	while (current)
 	{
@@ -161,10 +160,10 @@ static int	execute_builtin_redir(t_cmd_with_redir *cmd)
 
 int	execute_with_redirections(t_cmd_with_redir *cmd, char **envp)
 {
-	int	saved_fds;
-	int	saved_stdin;
-	int	saved_stdout;
-	int	status;
+	int		saved_fds;
+	int		saved_stdin;
+	int		saved_stdout;
+	int		status;
 	char	*path;
 	pid_t	pid;
 

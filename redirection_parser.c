@@ -51,7 +51,6 @@ t_redirection	*create_redirection(t_redir_type type, const char *target)
 	redir->type = type;
 	redir->next = NULL;
 	redir->heredoc_fd = -1;
-
 	if (type == REDIR_HEREDOC)
 	{
 		redir->delimiter = ft_strdup(target);
@@ -62,8 +61,8 @@ t_redirection	*create_redirection(t_redir_type type, const char *target)
 		redir->file = ft_strdup(target);
 		redir->delimiter = NULL;
 	}
-	if ((type == REDIR_HEREDOC && !redir->delimiter)
-		|| (type != REDIR_HEREDOC && !redir->file))
+	if ((type == REDIR_HEREDOC && !redir->delimiter) || (type != REDIR_HEREDOC
+			&& !redir->file))
 	{
 		free_redirection(redir);
 		return (NULL);

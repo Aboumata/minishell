@@ -11,9 +11,9 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "minishell_exec.h"
 #include "pipe_structures.h"
 #include "redirection_structures.h"
-#include "minishell_exec.h"
 
 static t_cmd_with_redir	*create_cmd_with_redir(char **args)
 {
@@ -114,9 +114,9 @@ static int	exec_cmd_with_redirections(t_cmd_with_redir *cmd, char **envp)
 
 static int	handle_heredoc_only(t_redirection *redirections)
 {
-	int		saved_stdin;
-	int		saved_stdout;
-	int		status;
+	int	saved_stdin;
+	int	saved_stdout;
+	int	status;
 
 	saved_stdin = dup(STDIN_FILENO);
 	saved_stdout = dup(STDOUT_FILENO);

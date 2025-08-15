@@ -34,7 +34,7 @@ static void	free_split_partial(char **args, int count)
 	int	i;
 
 	if (!args)
-		return;
+		return ;
 	i = 0;
 	while (i < count)
 	{
@@ -56,7 +56,6 @@ char	**extract_command_args(char **tokens, int *start, int end)
 	args = malloc(sizeof(char *) * (count + 1));
 	if (!args)
 		return (NULL);
-
 	j = 0;
 	i = *start;
 	while (i < end)
@@ -110,11 +109,9 @@ t_command	*create_command(char **args)
 		i++;
 	}
 	cmd->args[argc] = NULL;
-
 	cmd->is_builtin = is_builtin_command(args[0]);
 	cmd->redirections = NULL;
 	cmd->next = NULL;
-
 	return (cmd);
 }
 
@@ -123,7 +120,7 @@ void	free_command(t_command *cmd)
 	int	i;
 
 	if (!cmd)
-		return;
+		return ;
 	if (cmd->args)
 	{
 		i = 0;
@@ -136,7 +133,6 @@ void	free_command(t_command *cmd)
 	}
 	if (cmd->redirections)
 		free_redirection(cmd->redirections);
-
 	free(cmd);
 }
 

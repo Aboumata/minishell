@@ -32,8 +32,8 @@ void	print_syntax_error(char *token)
 
 static int	is_redirection_operator(const char *token)
 {
-	return (strcmp(token, ">") == 0 || strcmp(token, ">>") == 0 ||
-		strcmp(token, "<") == 0 || strcmp(token, "<<") == 0);
+	return (strcmp(token, ">") == 0 || strcmp(token, ">>") == 0 || strcmp(token,
+			"<") == 0 || strcmp(token, "<<") == 0);
 }
 
 static int	validate_redirection_syntax(char **tokens)
@@ -52,7 +52,8 @@ static int	validate_redirection_syntax(char **tokens)
 				return (0);
 			}
 			// Check for redirection followed by another operator
-			if (is_redirection_operator(tokens[i + 1]) || strcmp(tokens[i + 1], "|") == 0)
+			if (is_redirection_operator(tokens[i + 1]) || strcmp(tokens[i + 1],
+					"|") == 0)
 			{
 				if (strcmp(tokens[i + 1], "|") == 0)
 					print_syntax_error("|");
@@ -86,7 +87,8 @@ static int	validate_triple_redirect(char **tokens)
 	while (tokens[i])
 	{
 		// Check for ">>>"
-		if (strcmp(tokens[i], ">>") == 0 && tokens[i + 1] && strcmp(tokens[i + 1], ">") == 0)
+		if (strcmp(tokens[i], ">>") == 0 && tokens[i + 1] && strcmp(tokens[i
+				+ 1], ">") == 0)
 		{
 			print_syntax_error(">");
 			return (0);
@@ -158,19 +160,15 @@ int	validate_pipe_syntax(char **tokens)
 
 	if (!tokens || !tokens[0])
 		return (1);
-
 	// Check for triple redirect first
 	if (!validate_triple_redirect(tokens))
 		return (0);
-
 	// Check for redirection syntax errors
 	if (!validate_redirection_syntax(tokens))
 		return (0);
-
 	// Check pipe at start
 	if (!check_pipe_at_start(tokens))
 		return (0);
-
 	// Check for consecutive pipes and pipe at end
 	i = 0;
 	while (tokens[i])
@@ -181,6 +179,5 @@ int	validate_pipe_syntax(char **tokens)
 			return (0);
 		i++;
 	}
-
 	return (1);
 }
