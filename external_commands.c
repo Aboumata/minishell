@@ -25,13 +25,24 @@ int	handle_special_cases(char *command, char *path)
 {
 	if (safe_strcmp(path, "IS_DIRECTORY"))
 	{
-		printf("minishell: %s: Is a directory\n", command);
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(command, 2);
+		ft_putstr_fd(": Is a directory\n", 2);
 		return (126);
 	}
 	if (safe_strcmp(path, "PERMISSION_DENIED"))
 	{
-		printf("minishell: %s: Permission denied\n", command);
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(command, 2);
+		ft_putstr_fd(": Permission denied\n", 2);
 		return (126);
+	}
+	if (safe_strcmp(path, "NO_SUCH_FILE"))
+	{
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(command, 2);
+		ft_putstr_fd(": No such file or directory\n", 2);
+		return (127);
 	}
 	return (0);
 }
@@ -59,6 +70,8 @@ int	handle_external_command(char **tokens, char **envp)
 
 	if (!tokens || !tokens[0])
 		return (-1);
+	if (!tokens[0][0])
+		return (0);
 	special_status = handle_dot_command(tokens);
 	if (special_status != 0)
 		return (special_status);

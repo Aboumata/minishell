@@ -12,9 +12,53 @@
 
 #include "parsing.h"
 
+static char	**filter_empty_tokens(char **tokens)
+{
+	char	**filtered;
+	int		valid_count;
+	int		i;
+	int		j;
+
+	if (!tokens)
+		return (NULL);
+	valid_count = 0;
+	i = 0;
+	while (tokens[i])
+	{
+		if (tokens[i][0] != '\0')
+			valid_count++;
+		i++;
+	}
+	filtered = malloc(sizeof(char *) * (valid_count + 1));
+	if (!filtered)
+		return (NULL);
+	i = 0;
+	j = 0;
+	while (tokens[i])
+	{
+		if (tokens[i][0] != '\0')
+		{
+			filtered[j] = ft_strdup(tokens[i]);
+			if (!filtered[j])
+			{
+				while (j > 0)
+					free(filtered[--j]);
+				free(filtered);
+				return (NULL);
+			}
+			j++;
+		}
+		i++;
+	}
+	filtered[j] = NULL;
+
+	return (filtered);
+}
+
 char	**expand_tokens(char **tokens, t_envs *env, int last_status)
 {
 	char	**expanded_tokens;
+	char	**filtered_tokens;
 	int		i;
 	int		count;
 
@@ -36,7 +80,11 @@ char	**expand_tokens(char **tokens, t_envs *env, int last_status)
 		i++;
 	}
 	expanded_tokens[count] = NULL;
-	return (expanded_tokens);
+	filtered_tokens = filter_empty_tokens(expanded_tokens);
+	free_tokens(expanded_tokens);
+	if (filtered_tokens && !filtered_tokens[0])
+		return (filtered_tokens);
+	return (filtered_tokens);
 }
 
 void	free_tokens(char **tokens)

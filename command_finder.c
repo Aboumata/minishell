@@ -69,7 +69,7 @@ char	*find_executable(char *command)
 				return (ft_strdup(command));
 			return (ft_strdup("PERMISSION_DENIED"));
 		}
-		return (NULL);
+		return (ft_strdup("NO_SUCH_FILE"));
 	}
 	directories = get_path_directories();
 	if (!directories)
