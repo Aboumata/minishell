@@ -11,9 +11,7 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include "minishell_exec.h"
 #include "parsing/parsing.h"
-#include "pipe_structures.h"
 #include "signals/signals.h"
 
 t_envs		*g_env = NULL;
@@ -37,6 +35,35 @@ void	handle_export_unset(char *input)
 	free_split(args);
 }
 
+int	is_empty_after_expansion(const char *input)
+{
+	char	**tokens;
+	char	**expanded_tokens;
+	int		is_empty;
+
+	if (!input || !*input)
+		return (1);
+
+	tokens = mini_shell_split(input);
+	if (!tokens)
+		return (1);
+
+	expanded_tokens = expand_tokens(tokens, g_env, g_last_status);
+	free_tokens(tokens);
+
+	if (!expanded_tokens)
+	{
+		is_empty = 1;
+	}
+	else
+	{
+		is_empty = 0;
+		free_tokens(expanded_tokens);
+	}
+
+	return (is_empty);
+}
+
 static void	handle_input(char *input)
 {
 	extern char	**environ;
@@ -47,6 +74,13 @@ static void	handle_input(char *input)
 		reset_signal_flag();
 		return ;
 	}
+
+	if (is_empty_after_expansion(input))
+	{
+		g_last_status = 0;
+		return ;
+	}
+
 	handle_input_with_pipes(input, environ);
 }
 

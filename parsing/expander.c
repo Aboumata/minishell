@@ -15,6 +15,7 @@
 char	*get_var_value(const char *var, t_envs *env, int last_status)
 {
 	t_envs	*node;
+	char	*result;
 
 	if (!var)
 		return (ft_strdup(""));
@@ -22,8 +23,12 @@ char	*get_var_value(const char *var, t_envs *env, int last_status)
 		return (ft_itoa(last_status));
 	node = get_env(env, var);
 	if (node && node->values)
-		return (ft_strdup(node->values));
-	return (ft_strdup(""));
+	{
+		result = ft_strdup(node->values);
+		return (result);
+	}
+	result = ft_strdup("");
+	return (result);
 }
 
 int	is_var_char(char c, int first)

@@ -68,8 +68,10 @@ int	handle_external_command(char **tokens, char **envp)
 	int		status;
 	int		special_status;
 
-	if (!tokens || !tokens[0])
-		return (-1);
+	if (!tokens)
+		return (0);
+	if (!tokens[0])
+		return (0);
 	if (!tokens[0][0])
 		return (0);
 	special_status = handle_dot_command(tokens);

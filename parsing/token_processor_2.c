@@ -82,8 +82,13 @@ char	**expand_tokens(char **tokens, t_envs *env, int last_status)
 	expanded_tokens[count] = NULL;
 	filtered_tokens = filter_empty_tokens(expanded_tokens);
 	free_tokens(expanded_tokens);
-	if (filtered_tokens && !filtered_tokens[0])
-		return (filtered_tokens);
+	if (!filtered_tokens)
+		return (NULL);
+	if (!filtered_tokens[0])
+	{
+		free(filtered_tokens);
+		return (NULL);
+	}
 	return (filtered_tokens);
 }
 
