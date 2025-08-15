@@ -14,39 +14,39 @@
 
 void	setup_child_signals(void)
 {
-    signal(SIGINT, SIG_DFL);
-    signal(SIGQUIT, SIG_DFL);
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
 }
 
 void	setup_parent_execution_signals(void)
 {
-    signal(SIGINT, SIG_IGN);
-    signal(SIGQUIT, SIG_IGN);
+	signal(SIGINT, SIG_IGN);
+	signal(SIGQUIT, SIG_IGN);
 }
 
 void	restore_interactive_signals(void)
 {
-    signal(SIGINT, handle_sigint_interactive);
-    signal(SIGQUIT, handle_sigquit_interactive);
+	signal(SIGINT, handle_sigint_interactive);
+	signal(SIGQUIT, handle_sigquit_interactive);
 }
 
 int	handle_child_exit_status(int status)
 {
-    if (WIFEXITED(status))
-        return (WEXITSTATUS(status));
-    else if (WIFSIGNALED(status))
-    {
-        if (WTERMSIG(status) == SIGINT)
-        {
-            write(STDOUT_FILENO, "\n", 1);
-            return (130);
-        }
-        else if (WTERMSIG(status) == SIGQUIT)
-        {
-            write(STDOUT_FILENO, "Quit (core dumped)\n", 19);
-            return (131);
-        }
-        return (128 + WTERMSIG(status));
-    }
-    return (-1);
+	if (WIFEXITED(status))
+		return (WEXITSTATUS(status));
+	else if (WIFSIGNALED(status))
+	{
+		if (WTERMSIG(status) == SIGINT)
+		{
+			write(STDOUT_FILENO, "\n", 1);
+			return (130);
+		}
+		else if (WTERMSIG(status) == SIGQUIT)
+		{
+			write(STDOUT_FILENO, "Quit (core dumped)\n", 19);
+			return (131);
+		}
+		return (128 + WTERMSIG(status));
+	}
+	return (-1);
 }

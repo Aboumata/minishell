@@ -12,35 +12,35 @@
 
 #include "signals.h"
 
-int	g_signal_flag = 0;
+int		g_signal_flag = 0;
 
 void	handle_sigint_interactive(int sig)
 {
-    (void)sig;
-    g_signal_flag = 1;
-    write(STDOUT_FILENO, "\n", 1);
-    rl_on_new_line();
-    rl_replace_line("", 0);
-    rl_redisplay();
+	(void)sig;
+	g_signal_flag = 1;
+	write(STDOUT_FILENO, "\n", 1);
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
 }
 
 void	handle_sigquit_interactive(int sig)
 {
-    (void)sig;
+	(void)sig;
 }
 
 void	setup_interactive_signals(void)
 {
-    signal(SIGINT, handle_sigint_interactive);
-    signal(SIGQUIT, handle_sigquit_interactive);
+	signal(SIGINT, handle_sigint_interactive);
+	signal(SIGQUIT, handle_sigquit_interactive);
 }
 
 void	reset_signal_flag(void)
 {
-    g_signal_flag = 0;
+	g_signal_flag = 0;
 }
 
 int	check_signal_flag(void)
 {
-    return (g_signal_flag);
+	return (g_signal_flag);
 }
