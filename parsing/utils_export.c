@@ -78,7 +78,6 @@ char	*strip_quotes(const char *value)
 
 	if (!value)
 		return (NULL);
-
 	len = ft_strlen(value);
 	result = malloc(len + 1);
 	if (!result)

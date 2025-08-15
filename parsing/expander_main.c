@@ -70,7 +70,6 @@ static void	handle_unquoted(const char *input, int *i, char *out, int *j,
 	ctx.out = out;
 	ctx.j = j;
 	ctx.i = i;
-
 	if (input[*i] == '\\' && input[*i + 1] == '$')
 	{
 		out[(*j)++] = '$';

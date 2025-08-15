@@ -51,7 +51,6 @@ static char	**filter_empty_tokens(char **tokens)
 		i++;
 	}
 	filtered[j] = NULL;
-
 	return (filtered);
 }
 
@@ -71,7 +70,8 @@ char	**expand_tokens(char **tokens, t_envs *env, int last_status)
 	i = 0;
 	while (i < count)
 	{
-		expanded_tokens[i] = process_single_token_with_context(tokens[i], env, last_status, tokens, i);
+		expanded_tokens[i] = process_single_token_with_context(tokens[i], env,
+				last_status, tokens, i);
 		if (!expanded_tokens[i])
 		{
 			cleanup_expanded_tokens(expanded_tokens, i);
