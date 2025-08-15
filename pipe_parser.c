@@ -27,11 +27,12 @@ static t_pipeline	*init_pipeline(char **tokens)
 
 static int	add_command_to_pipeline(t_pipeline *pipeline, char **args)
 {
-	t_command	*cmd;
-	t_command	*current;
-	char		**clean_args;
-	t_redirection *redirections = NULL;
+	t_command		*cmd;
+	t_command		*current;
+	char			**clean_args;
+	t_redirection	*redirections;
 
+	redirections = NULL;
 	if (has_redirections(args))
 	{
 		redirections = parse_redirections(args, &clean_args);
@@ -47,7 +48,6 @@ static int	add_command_to_pipeline(t_pipeline *pipeline, char **args)
 	{
 		cmd = create_command(args);
 	}
-
 	if (!cmd)
 	{
 		free_redirection(redirections);

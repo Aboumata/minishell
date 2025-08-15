@@ -82,15 +82,14 @@ static void	execute_child_process(t_command *cmd, int input_fd, int output_fd,
 		char **envp)
 {
 	char	*path;
+	int		status;
 
 	setup_child_fds(input_fd, output_fd);
-
 	if (cmd->is_builtin)
 	{
-		int status = execute_builtin_in_pipe(cmd, STDIN_FILENO, STDOUT_FILENO);
+		status = execute_builtin_in_pipe(cmd, STDIN_FILENO, STDOUT_FILENO);
 		exit(status);
 	}
-
 	path = find_executable(cmd->args[0]);
 	if (!path)
 	{

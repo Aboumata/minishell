@@ -43,14 +43,11 @@ int	is_empty_after_expansion(const char *input)
 
 	if (!input || !*input)
 		return (1);
-
 	tokens = mini_shell_split(input);
 	if (!tokens)
 		return (1);
-
 	expanded_tokens = expand_tokens(tokens, g_env, g_last_status);
 	free_tokens(tokens);
-
 	if (!expanded_tokens)
 	{
 		is_empty = 1;
@@ -60,7 +57,6 @@ int	is_empty_after_expansion(const char *input)
 		is_empty = 0;
 		free_tokens(expanded_tokens);
 	}
-
 	return (is_empty);
 }
 
@@ -74,13 +70,11 @@ static void	handle_input(char *input)
 		reset_signal_flag();
 		return ;
 	}
-
 	if (is_empty_after_expansion(input))
 	{
 		g_last_status = 0;
 		return ;
 	}
-
 	handle_input_with_pipes(input, environ);
 }
 

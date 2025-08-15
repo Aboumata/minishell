@@ -11,11 +11,11 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include "redirection_structures.h"
 #include "parsing/parsing.h"
+#include "redirection_structures.h"
 #include "signals/signals.h"
 
-static int g_heredoc_line_counter = 1;
+static int	g_heredoc_line_counter = 1;
 
 char	*generate_temp_filename(void)
 {
@@ -92,12 +92,13 @@ int	process_delimiter(char **delimiter, int *should_expand)
 	return (0);
 }
 
-int	write_heredoc_content(int fd, char *delimiter, int should_expand, int line_num)
+int	write_heredoc_content(int fd, char *delimiter, int should_expand,
+		int line_num)
 {
-	char		*line;
-	char		*expanded_line;
-	pid_t		pid;
-	int			status;
+	char	*line;
+	char	*expanded_line;
+	pid_t	pid;
+	int		status;
 
 	pid = fork();
 	if (pid == 0)
@@ -244,14 +245,11 @@ int	process_all_heredocs(t_redirection *redirections)
 			heredoc_count++;
 		current = current->next;
 	}
-
 	if (heredoc_count == 0)
 		return (0);
-
 	heredoc_array = malloc(sizeof(t_redirection *) * heredoc_count);
 	if (!heredoc_array)
 		return (-1);
-
 	current = redirections;
 	i = 0;
 	while (current)
