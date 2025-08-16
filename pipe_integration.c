@@ -171,9 +171,8 @@ static int	validate_raw_syntax(const char *input)
 	int		redirect_len;
 	int		j;
 	int		next_len;
-					char next_op[3] = {0};
-					int k;
-	int		j;
+	char next_op[3] = {0};
+	int k;
 
 	i = 0;
 	quote = 0;
