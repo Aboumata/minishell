@@ -103,3 +103,31 @@ char	*strip_quotes(const char *value)
 	result[j] = '\0';
 	return (result);
 }
+
+bool	is_valid(const char *str)
+{
+	int	i;
+
+	i = 0;
+	if (!str || str[0] == '\0' || str[0] == '=' || str[0] == ' '
+		|| (str[0] >= '0' && str[0] <= '9'))
+		return (false);
+	while (str[i] && str[i] != '=' && !(str[i] == '+' && str[i + 1] == '='))
+	{
+		if (i == 0)
+		{
+			if (!(ft_isalpha(str[i]) || str[i] == '_'))
+				return (false);
+		}
+		else if (!(ft_isalnum(str[i]) || str[i] == '_'))
+			return (false);
+		if (str[i] == ' ')
+			return (false);
+		i++;
+	}
+	if (str[i] == '+' && str[i + 1] != '=')
+		return (false);
+	if (i == 0)
+		return (false);
+	return (true);
+}

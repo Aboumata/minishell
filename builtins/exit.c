@@ -67,28 +67,41 @@ static int	ft_atoll_safe(const char *str, long long *result)
 	return (1);
 }
 
+static void	cleanup_and_exit(int code)
+{
+	clear_history();
+	free_env(g_env);
+	g_env = NULL;
+	exit(code);
+}
+
+static void	handle_exit_errors(char *arg, int error_type)
+{
+	if (error_type == 1)
+	{
+		ft_putstr_fd("minishell: exit: ", 2);
+		ft_putstr_fd(arg, 2);
+		ft_putstr_fd(": numeric argument required\n", 2);
+		cleanup_and_exit(2);
+	}
+	else if (error_type == 2)
+		ft_putstr_fd("minishell: exit: too many arguments\n", 2);
+}
+
 int	builtin_exit(char **argv)
 {
 	long long	code;
 
-	if (argv[1] && argv[2])
+	printf("exit\n");
+	if (!argv[1])
+		cleanup_and_exit(0);
+	if (!is_valid_number(argv[1]) || !ft_atoll_safe(argv[1], &code))
+		handle_exit_errors(argv[1], 1);
+	if (argv[2])
 	{
-		printf("exit\n");
-		ft_putstr_fd("minishell: exit: too many arguments\n", 2);
+		handle_exit_errors(NULL, 2);
 		return (1);
 	}
-	printf("exit\n");
-	clear_history();
-	free_env(g_env);
-	g_env = NULL;
-	if (!argv[1])
-		exit(0);
-	if (!is_valid_number(argv[1]) || !ft_atoll_safe(argv[1], &code))
-	{
-		ft_putstr_fd("minishell: exit: ", 2);
-		ft_putstr_fd(argv[1], 2);
-		ft_putstr_fd(": numeric argument required\n", 2);
-		exit(2);
-	}
-	exit((unsigned char)code);
+	cleanup_and_exit((unsigned char)code);
+	return (0);
 }

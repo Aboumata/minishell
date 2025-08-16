@@ -52,6 +52,8 @@ void			skip_spaces(const char *s, int *i);
 char			**expand_tokens(char **tokens, t_envs *env, int last_status);
 void			free_tokens(char **tokens);
 char			**parse_command_line(const char *input, t_envs *env, int last_status);
+bool			is_valid(const char *str);
+
 
 /* token_processor helper functions */
 int				count_tokens(char **tokens);
